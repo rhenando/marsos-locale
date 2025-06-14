@@ -77,5 +77,119 @@
     "upload_success": "File uploaded!",
     "no_suppliers": "No suppliers found for this category.",
     "submit_failed": "Request submission failed. Please try again."
+  },
+  "product_card": {
+    "unnamed_product": "Unnamed Product",
+    "hot": "Hot",
+    "loading": "Loading",
+    "supplier": "Supplier:",
+    "unknown": "Unknown",
+    "negotiable": "Negotiable",
+    "min_order": "Min. Order: {minOrder} pcs",
+    "view_details": "View Details",
+    "contact_supplier": "Contact Supplier",
+    "login_first": "Please log in first to contact the supplier.",
+    "cannot_chat_own": "You can't chat with your own product.",
+    "chat_create_failed": "Failed to create chat. Please try again.",
+    "product_added_success": "Product added successfully.",
+    "add_to_cart": "Add to Cart"
+  },
+  "uncategorized": "Uncategorized",
+  "hero": {
+    "title": "Effortless Shopping for the Saudi Products, Right at Your Fingertips",
+    "paragraph1": "We’re here to make your importing experience as comfortable and seamless as possible. Discover a platform that unites the products from across the Kingdom of Saudi Arabia—all in one place.",
+    "paragraph2": "From manufactures to your door, we bring together a diverse range of services with a user-friendly technology and convenient payment options, to have a seamless purchasing experience",
+    "banner1": {
+      "cta": "Know More"
+    },
+    "banner2": {
+      "title": "Trusted Saudi Suppliers",
+      "desc": "Access a curated network of certified manufacturers across Saudi Arabia. From textiles to tools, source directly from industry leaders.",
+      "cta": "Browse Suppliers"
+    },
+    "banner3": {
+      "title": "Verified Quality Products",
+      "desc": "Our suppliers meet global standards for product quality, certifications, and safety. Shop with confidence, every time.",
+      "cta": "See Verified Products"
+    },
+    "categories": "Categories",
+    "recommendations": "Recommended for You",
+    "productsInCategory": "Products",
+    "requestRFQ": "Request RFQ",
+    "cards": {
+      "choice": "Wide Choices",
+      "choiceDesc": "Access diverse suppliers and products",
+      "secure": "Secure Trading",
+      "secureDesc": "Your transactions are safe with us",
+      "topSupplier": "Top Suppliers",
+      "topSupplierDesc": "Partner with industry leaders",
+      "fastResponse": "Fast Response",
+      "fastResponseDesc": "Receive quick quotes and offers"
+    }
+  },
+  "section": {
+    "trending": "Trending Products",
+    "allProducts": "All Products",
+    "allCategories": "All Categories",
+    "exploreCategories": "Explore Categories"
+  },
+  "errors": {
+    "no_supplier_found": "No supplier found.",
+    "no_buyer_found": "No buyer found.",
+    "fetch_failed": "Failed to fetch data."
+  },
+
+  "login": {
+    "title": {
+      "phone": "Sign in with your Phone Number",
+      "otp": "Enter the OTP Code"
+    },
+    "desc": {
+      "phone": "We’ll send you a one-time password (OTP) to verify your phone number.",
+      "otp": "Enter the 6-digit OTP code sent to your phone."
+    },
+    "errors": {
+      "mustAcceptTerms": "You must accept the Terms & Privacy Policy.",
+      "invalidPhone": "Please enter a valid phone number.",
+      "otpSendFailed": "Failed to send OTP. Please try again.",
+      "invalidOtp": "Please enter a valid 6-digit OTP.",
+      "otpVerifyFailed": "Verification failed. Please try again."
+    },
+    "messages": {
+      "otpSent": "OTP has been sent!",
+      "welcomeBack": "Welcome back!",
+      "noAccount": "No account found for this phone number. Would you like to create one?"
+    },
+    "labels": {
+      "acceptTerms": "I accept the",
+      "and": "and"
+    },
+    "links": {
+      "terms": "Terms & Conditions",
+      "privacy": "Privacy Policy"
+    },
+    "buttons": {
+      "sendOtp": "Send OTP",
+      "sending": "Sending...",
+      "verifyOtp": "Verify OTP",
+      "verifying": "Verifying...",
+      "signUp": "Sign Up"
+    },
+    "placeholders": {
+      "phone": "Phone number"
+    },
+    "phoneCodes": {
+      "sa": "🇸🇦",
+      "ae": "🇦🇪",
+      "bh": "🇧🇭",
+      "kw": "🇰🇼",
+      "om": "🇴🇲",
+      "qa": "🇶🇦",
+      "ph": "🇵🇭"
+    },
+    "welcome": {
+      "title": "Welcome to Marsos",
+      "subtitle": "Your trusted marketplace for buyers and suppliers in the region."
+    }
   }
 }

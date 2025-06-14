@@ -2,26 +2,27 @@
 
 import React, { memo, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
-import { Eye, Mail, Heart } from "react-feather";
+import { Eye, Mail, Heart } from "lucide-react"; // <-- Updated
 import { getAuth } from "firebase/auth";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import Currency from "@/components/global/CurrencySymbol";
 import { toast } from "sonner";
 import { db } from "@/firebase/config";
+import { useTranslations, useLocale } from "next-intl";
 
-const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
+const ProductCard = ({ product, currencySymbol, formatNumber }) => {
   const router = useRouter();
-  const { t, i18n } = useTranslation();
+  const t = useTranslations("product_card");
+  const uncategorizedT = useTranslations();
   const [isPending, startTransition] = useTransition();
-  const lang = i18n.language;
+  const locale = useLocale();
 
-  // 🔁 Fallback-safe function for localization
   const getLocalizedValue = (value) => {
     if (!value) return "";
     if (typeof value === "string") return value;
-    if (typeof value === "object")
-      return value[lang] || value.en || value.ar || "";
+    if (typeof value === "object") {
+      return value[locale] || value.en || value.ar || "";
+    }
     return "";
   };
 
@@ -33,10 +34,10 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
   const mainImage = product.mainImageUrl || "https://via.placeholder.com/300";
 
   const getLocalizedProductName = () =>
-    getLocalizedValue(product.productName) || t("product_card.unnamed_product");
+    getLocalizedValue(product.productName) || t("unnamed_product");
 
   const getLocalizedCategory = () =>
-    getLocalizedValue(product.category) || t("uncategorized");
+    getLocalizedValue(product.category) || uncategorizedT("uncategorized");
 
   const handleViewProduct = () => {
     startTransition(() => {
@@ -49,12 +50,12 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
     const currentUser = auth.currentUser;
 
     if (!currentUser) {
-      toast.error(t("product_card.login_first"));
+      toast.error(t("login_first"));
       return;
     }
 
     if (currentUser.uid === product.supplierId) {
-      toast.error(t("product_card.cannot_chat_own"));
+      toast.error(t("cannot_chat_own"));
       return;
     }
 
@@ -101,7 +102,7 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
       router.push(`/chat/product/${chatId}`);
     } catch (err) {
       console.error("Error initializing chat or snapshot:", err);
-      toast.error(t("product_card.chat_create_failed"));
+      toast.error(t("chat_create_failed"));
     }
   };
 
@@ -114,7 +115,7 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
       {isPending && (
         <div className='absolute inset-0 bg-white/70 flex items-center justify-center z-50'>
           <span className='text-[#2c6449] text-[0.6rem] sm:text-sm font-medium'>
-            {t("product_card.loading")}...
+            {t("loading")}...
           </span>
         </div>
       )}
@@ -124,7 +125,7 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
           <Heart size={16} className='text-red-500' />
         </div>
         <div className='absolute top-2 left-2 bg-red-600 text-white text-[0.5rem] sm:text-xs font-semibold px-2 py-0.5 rounded shadow z-10'>
-          {t("product_card.hot")}
+          {t("hot")}
         </div>
         <div
           className='relative aspect-[4/3] bg-white overflow-hidden border-b border-gray-200 cursor-pointer'
@@ -157,9 +158,9 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
             </h3>
 
             <p className='text-[0.6rem] sm:text-xs text-gray-500 mt-1 mb-2'>
-              {t("product_card.supplier")}{" "}
+              {t("supplier")}{" "}
               <span className='capitalize font-medium'>
-                {product.supplierName || t("product_card.unknown")}
+                {product.supplierName || t("unknown")}
               </span>
             </p>
 
@@ -191,7 +192,7 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
 
                       {isNaN(priceVal) ? (
                         <span className='text-[8px] italic text-[#2c6449]'>
-                          {t("product_card.negotiable")}
+                          {t("negotiable")}
                         </span>
                       ) : (
                         <span className='font-bold'>
@@ -204,12 +205,12 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
               </div>
             ) : (
               <p className='text-[8px] italic text-[#2c6449] mb-1'>
-                {t("product_card.negotiable")}
+                {t("negotiable")}
               </p>
             )}
 
             <p className='text-[0.6rem] sm:text-xs text-gray-500 capitalize'>
-              {t("product_card.min_order", { minOrder })}
+              {t("min_order", { minOrder })}
             </p>
           </div>
 
@@ -226,7 +227,7 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
               '
             >
               <Eye size={14} />
-              {t("product_card.view_details")}
+              {t("view_details")}
             </button>
 
             <button
@@ -235,7 +236,7 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
                 const currentUser = auth.currentUser;
 
                 if (!currentUser) {
-                  toast.error(t("product_card.login_first"));
+                  toast.error(t("login_first"));
                   return;
                 }
 
@@ -251,7 +252,7 @@ const ProductCard = ({ product, locale, currencySymbol, formatNumber }) => {
               '
             >
               <Mail size={14} />
-              {t("product_card.contact_supplier")}
+              {t("contact_supplier")}
             </button>
           </div>
         </div>

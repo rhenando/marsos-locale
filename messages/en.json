@@ -2,5 +2,80 @@
   "HomePage": {
     "title": "Hello world!",
     "about": "Go to the about page"
+  },
+  "header": {
+    "home": "Home",
+    "signin": "Sign in",
+    "menu": "Menu",
+    "account": "Account",
+    "dashboard": "Dashboard",
+    "logout": "Log out",
+    "explore": "Explore",
+    "request_rfq": "Request for Quotation",
+    "messages": "Messages",
+    "cart": "Cart",
+    "info": "Info",
+    "loading": "Loading...",
+    "all_categories": "All Categories",
+    "featured": "Featured",
+    "trending": "Trending",
+    "secured_trading": "Secured Trading",
+    "help_center": "Help Center",
+    "become_supplier": "Become a Supplier",
+    "sticky": {
+      "delivery_to": "Deliver to"
+    }
+  },
+  "sticky": {
+    "products": "Products",
+    "search_placeholder": "Search for products...",
+    "delivery_to": "Deliver to"
+  },
+  "search": {
+    "productsHeading": "Products",
+    "noResults": "No products found."
+  },
+  "footer": {
+    "aboutTitle": "About Us",
+    "aboutText": "Marsos is your trusted partner for discovering top suppliers and products in Saudi Arabia. We connect buyers and suppliers for seamless, secure trading.",
+    "quickLinks": "Quick Links",
+    "exploreProducts": "Explore Products",
+    "viewCategories": "View Categories",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "language": "Language",
+    "followUs": "Follow Us",
+    "rights": "© 2025 Marsos. All rights reserved."
+  },
+  "rfq": {
+    "title": "Request for Quotation",
+    "category": "Category",
+    "subcategory": "Subcategory",
+    "size": "Size",
+    "color": "Color",
+    "shipping": "Shipping Country",
+    "details": "Product Details",
+    "upload_file": "Attach a file (jpg, png, pdf, docx)",
+    "uploading": "Uploading...",
+    "file_uploaded": "File uploaded successfully!",
+    "share_contact": "Share my business card with suppliers",
+    "submit": "Send RFQ",
+    "sending": "Sending...",
+    "must_login": "Please log in to send a request.",
+    "sent_success": "Request sent successfully!",
+    "success_message": "Your request has been sent!",
+    "redirecting": "You will be redirected to your messages.",
+    "fetch_categories_error": "Failed to fetch categories.",
+    "error_category": "Please select a category.",
+    "error_subcategory": "Please select or enter a subcategory.",
+    "error_details": "Please enter product details.",
+    "error_file": "Please attach a file.",
+    "error_file_upload": "Please wait for the file to upload.",
+    "upload_failed": "File upload failed.",
+    "upload_success": "File uploaded!",
+    "no_suppliers": "No suppliers found for this category.",
+    "submit_failed": "Request submission failed. Please try again."
   }
 }

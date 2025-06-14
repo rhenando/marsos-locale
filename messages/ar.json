@@ -1,6 +1,81 @@
 {
   "HomePage": {
-    "title": "مرحبا بالعالم!",
+    "title": "مرحباً بالعالم!",
     "about": "اذهب إلى صفحة حول"
+  },
+  "header": {
+    "home": "الرئيسية",
+    "signin": "تسجيل الدخول",
+    "menu": "القائمة",
+    "account": "الحساب",
+    "dashboard": "لوحة التحكم",
+    "logout": "تسجيل الخروج",
+    "explore": "استكشاف",
+    "request_rfq": "طلب عرض سعر",
+    "messages": "الرسائل",
+    "cart": "عربة التسوق",
+    "info": "معلومات",
+    "loading": "جار التحميل...",
+    "all_categories": "جميع الفئات",
+    "featured": "مميز",
+    "trending": "الأكثر رواجاً",
+    "secured_trading": "تجارة آمنة",
+    "help_center": "مركز المساعدة",
+    "become_supplier": "كن مورداً",
+    "sticky": {
+      "delivery_to": "التوصيل إلى"
+    }
+  },
+  "sticky": {
+    "products": "المنتجات",
+    "search_placeholder": "ابحث عن المنتجات...",
+    "delivery_to": "التوصيل إلى"
+  },
+  "search": {
+    "productsHeading": "المنتجات",
+    "noResults": "لم يتم العثور على منتجات."
+  },
+  "footer": {
+    "aboutTitle": "معلومات عنا",
+    "aboutText": "مرصوص هو شريكك الموثوق لاكتشاف أفضل الموردين والمنتجات في المملكة العربية السعودية. نحن نربط المشترين بالموردين لتجارة سلسة وآمنة.",
+    "quickLinks": "روابط سريعة",
+    "exploreProducts": "استكشاف المنتجات",
+    "viewCategories": "عرض الفئات",
+    "support": "الدعم",
+    "helpCenter": "مركز المساعدة",
+    "terms": "الشروط والأحكام",
+    "privacy": "سياسة الخصوصية",
+    "language": "اللغة",
+    "followUs": "تابعنا",
+    "rights": "© 2025 مرصوص. جميع الحقوق محفوظة."
+  },
+  "rfq": {
+    "title": "طلب عرض سعر",
+    "category": "الفئة",
+    "subcategory": "الفئة الفرعية",
+    "size": "الحجم",
+    "color": "اللون",
+    "shipping": "بلد الشحن",
+    "details": "تفاصيل المنتج",
+    "upload_file": "إرفاق ملف (jpg، png، pdf، docx)",
+    "uploading": "جاري التحميل...",
+    "file_uploaded": "تم رفع الملف بنجاح!",
+    "share_contact": "مشاركة بطاقة العمل مع الموردين",
+    "submit": "إرسال الطلب",
+    "sending": "جاري الإرسال...",
+    "must_login": "يرجى تسجيل الدخول لإرسال الطلب.",
+    "sent_success": "تم إرسال الطلب بنجاح!",
+    "success_message": "تم إرسال طلبك!",
+    "redirecting": "سيتم تحويلك إلى الرسائل.",
+    "fetch_categories_error": "فشل في جلب الفئات.",
+    "error_category": "يرجى اختيار الفئة.",
+    "error_subcategory": "يرجى اختيار أو إدخال الفئة الفرعية.",
+    "error_details": "يرجى إدخال تفاصيل المنتج.",
+    "error_file": "يرجى إرفاق ملف.",
+    "error_file_upload": "يرجى الانتظار حتى يتم رفع الملف.",
+    "upload_failed": "فشل رفع الملف.",
+    "upload_success": "تم رفع الملف!",
+    "no_suppliers": "لم يتم العثور على موردين لهذه الفئة.",
+    "submit_failed": "فشل إرسال الطلب. يرجى المحاولة مرة أخرى."
   }
 }

@@ -410,7 +410,7 @@ export default function Header({ setShowRFQModal }) {
           <Link href='/faq' className='hover:text-green-800'>
             {t("help_center")}
           </Link>
-          <Link href='/become-supplier' className='hover:text-green-800'>
+          <Link href='/supplier-onboarding' className='hover:text-green-800'>
             {t("become_supplier")}
           </Link>
         </div>

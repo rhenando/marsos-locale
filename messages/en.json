@@ -158,7 +158,7 @@
     "messages": {
       "otpSent": "OTP has been sent!",
       "welcomeBack": "Welcome back!",
-      "noAccount": "No account found for this phone number. Would you like to create one?"
+      "noAccount": "You don’t have an account with us!"
     },
     "labels": {
       "acceptTerms": "I accept the",
@@ -190,6 +190,312 @@
     "welcome": {
       "title": "Welcome to Marsos",
       "subtitle": "Your trusted marketplace for buyers and suppliers in the region."
+    }
+  },
+  "Admin-Dashboard": {
+    "title": "Dashboard Overview",
+    "totalRevenue": "Total Revenue",
+    "activeUsers": "Active Users",
+    "transactions": "Transactions",
+    "analytics": "Analytics",
+    "stable": "Stable"
+  },
+  "AdminSidebar": {
+    "adminPanel": "Admin Panel",
+    "dashboard": "Dashboard",
+    "orders": "Orders",
+    "transactions": "Transactions",
+    "abandonCarts": "Abandon Carts",
+    "products": "Products",
+    "productList": "Product List",
+    "productCategory": "Product Category",
+    "users": "Users",
+    "admins": "Admins",
+    "suppliers": "Suppliers",
+    "buyers": "Buyers",
+    "messages": "Messages",
+    "marketing": "Marketing",
+    "seo": "SEO",
+    "promotion": "Promotion",
+    "couponCode": "Coupon Code",
+    "settings": "Settings"
+  },
+  "sticky-search": {
+    "products": "Products",
+    "search_placeholder": "Search for products...",
+    "productsHeading": "Products",
+    "noResults": "No matching products found.",
+    "searchPlaceholder": "Search products...",
+    "unnamed": "Unnamed Product",
+    "loading": "Loading..."
+  },
+  "product_details_page": {
+    "not_found": "Product not found.",
+    "unnamed_product": "Unnamed Product",
+    "no_description": "No description available.",
+    "category": "Product Category",
+    "supplier": "Supplier",
+    "pricing": "Pricing",
+    "negotiable_price": "Pricing Negotiable - Contact Supplier",
+    "pcs": "pcs",
+    "unlimited": "Unlimited",
+    "quantity": "Quantity",
+    "minimum_qty": "Minimum quantity is",
+    "select_size": "Select Size",
+    "select_color": "Select Color",
+    "choose_option": "Choose an option",
+    "delivery_location": "Delivery Location",
+    "shipping_cost": "Shipping Cost",
+    "subtotal": "Subtotal",
+    "add_to_cart": "Add to Cart",
+    "added_to_cart": "Product added to cart!",
+    "cart_error": "Failed to add item to cart.",
+    "contact_supplier": "Contact Supplier",
+    "you_own": "You own this product",
+    "description": "Description",
+    "reviews": "Reviews",
+    "no_reviews": "No reviews yet.",
+    "alert_quantity": "Please enter a valid quantity.",
+    "alert_size": "Please select a size.",
+    "alert_color": "Please select a color.",
+    "alert_location": "Please select a delivery location.",
+    "contact_for_price": "Contact supplier to negotiate the price.",
+    "uncategorized": "Uncategorized",
+    "login_first": "Please log in to contact the supplier.",
+    "no_supplier": "Supplier ID is missing.",
+    "error_occurred": "An error occurred."
+  },
+  "cart": {
+    "heading": "Your Cart",
+    "emptyCart": {
+      "title": "Your cart is empty",
+      "message": "Explore our products and add some items!"
+    },
+    "actions": {
+      "browseProducts": "Browse Products",
+      "remove": "Remove",
+      "proceedToCheckout": "Proceed to Checkout",
+      "contactSupplier": "Contact Supplier to Negotiate",
+      "reviewOrder": "Review Order"
+    },
+    "labels": {
+      "qty": "Qty:",
+      "size": "Size:",
+      "color": "Color:",
+      "location": "Location:",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "vat": "VAT (15%)",
+      "total": "Total"
+    },
+    "supplierLabel": "Supplier: {{supplier}}",
+    "unknownSupplier": "Unknown Supplier",
+    "errors": {
+      "minQuantity": "Quantity must be at least 1"
+    }
+  },
+  "categories": {
+    "welcome": "Welcome to Our Product Catalog",
+    "subtitle": "Browse by category, filter by subcategory, and discover our best products.",
+    "products": "{count} products found",
+    "categories": "Categories",
+    "no_products_found": "No products found in this category."
+  },
+  "breadcrumbs": {
+    "home": "Home"
+  },
+  "common": {
+    "back_to_top": "Back to top"
+  },
+  "user-choice": {
+    "login": {
+      "chooseRole": "Choose Your Account",
+      "desc": {
+        "chooseRole": "Select whether you’re a buyer or a supplier."
+      },
+      "buttons": {
+        "loading": "Loading…"
+      },
+      "roles": {
+        "buyer": "Buyer",
+        "supplier": "Supplier"
+      },
+      "welcome": {
+        "title": "Welcome to Marsos",
+        "subtitle": "Your gateway to seamless supplier and buyer experiences."
+      }
+    }
+  },
+  "supplier": {
+    "welcome": {
+      "title": "Supplier Onboarding"
+    },
+    "steps": {
+      "authNun": "Authenticate NUN",
+      "verifyDate": "Verify Issue Date",
+      "completeDetails": "Complete Company Details"
+    },
+    "labels": {
+      "nun": "NUN Number",
+      "issueDate": "Issue Date",
+      "hijri": "Hijri",
+      "gregorian": "Gregorian"
+    },
+    "buttons": {
+      "authenticate": "Authenticate",
+      "authenticating": "Authenticating...",
+      "verify": "Verify",
+      "verifyingDate": "Verifying...",
+      "submit": "Submit Application",
+      "uploading": "Submitting..."
+    },
+    "messages": {
+      "authSuccess": "NUN authenticated successfully.",
+      "dateVerified": "Issue date verified.",
+      "submitted": "Application submitted successfully!"
+    },
+    "errors": {
+      "nunRequired": "Please enter your NUN number.",
+      "authFailed": "Failed to authenticate NUN.",
+      "dateRequired": "Please select the issue date.",
+      "dateFailed": "Failed to verify date.",
+      "completeAllFields": "Please fill in all required fields.",
+      "submitFailed": "Failed to submit the application. Try again."
+    }
+  },
+  "onboarding": {
+    "legends": {
+      "companyDetails": "Company Details",
+      "authorizedPerson": "Authorized Person"
+    },
+    "labels": {
+      "companyName": "Company Name",
+      "companyEmail": "Company Email",
+      "nun": "NUN Number",
+      "commercialReg": "Commercial Registration Number",
+      "crIssueG": "CR Issue (Gregorian)",
+      "crIssueH": "CR Issue (Hijri)",
+      "crConfirmG": "CR Confirmation (Gregorian)",
+      "crConfirmH": "CR Confirmation (Hijri)",
+      "vatRegNumber": "VAT Registration Number",
+      "companyPhone": "Company Phone",
+      "city": "City",
+      "zipCode": "Postal Code",
+      "country": "Country",
+      "address": "Address",
+      "authPersonName": "Authorized Person Name",
+      "authPersonEmail": "Authorized Person Email",
+      "authPassword": "Password",
+      "authPhone": "Mobile",
+      "designation": "Role",
+      "personalIdNumber": "ID Number"
+    },
+    "placeholders": {
+      "companyName": "e.g. Al-Marsos Trading Co.",
+      "companyEmail": "company@email.com",
+      "nun": "Enter NUN number",
+      "commercialReg": "Enter CR number",
+      "crIssueG": "CR issue date (Gregorian)",
+      "crIssueH": "CR issue date (Hijri)",
+      "crConfirmG": "CR confirmation date (Gregorian)",
+      "crConfirmH": "CR confirmation date (Hijri)",
+      "vatRegNumber": "VAT registration number",
+      "companyPhone": "5XXXXXXXX",
+      "city": "e.g. Riyadh",
+      "zipCode": "e.g. 12345",
+      "country": "e.g. Saudi Arabia",
+      "address": "Company address",
+      "authPersonName": "Full name",
+      "authPersonEmail": "authorized@email.com",
+      "authPassword": "Password",
+      "authPersonMobile": "5XXXXXXXX",
+      "designation": "e.g. Manager",
+      "personalIdNumber": "National ID or Iqama"
+    }
+  },
+
+  "buyerDashboard": {
+    "menu": {
+      "home": "Home",
+      "profile": "Profile",
+      "orders": "Orders",
+      "wishlist": "Wishlist",
+      "cart": "Cart",
+      "messages": "Messages",
+      "support": "Support"
+    },
+    "titles": {
+      "dashboard": "Buyer Dashboard",
+      "welcome": "Welcome, {name}!",
+      "wishlist": "Wishlist",
+      "cart": "Shopping Cart",
+      "support": "Support",
+      "notFound": "Page Not Found"
+    },
+    "content": {
+      "welcome": "Manage your orders, wishlist, and profile all in one place.",
+      "wishlist": "Items you’ve saved for later.",
+      "cart": "View and manage items in your cart.",
+      "support": "Need help? Reach out to our support team."
+    },
+    "loading": "Loading your dashboard…",
+    "notSignedIn": "You need to {signIn} first.",
+    "signIn": "sign in"
+  },
+  "userMessages": {
+    "title": "Messages",
+    "searchPlaceholder": "Search by name…",
+    "typePlaceholder": "All Types",
+    "types": {
+      "all": "All Types",
+      "rfq": "RFQ Inquiry",
+      "product": "Product Inquiry",
+      "cart": "Cart Inquiry",
+      "order": "Order Inquiry"
+    },
+    "table": {
+      "name": "Name",
+      "type": "Concern Type",
+      "lastUpdated": "Last Updated",
+      "actions": "Actions",
+      "open": "Open",
+      "markRead": "Mark read"
+    },
+    "mobile": {
+      "open": "Open",
+      "markRead": "Mark read"
+    },
+    "empty": "No messages found.",
+    "redirecting": "Redirecting to login…",
+    "loading": "Loading messages…"
+  },
+  "buyer_profile": {
+    "title": "My Profile",
+    "fields": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "address": "Address",
+      "phone": "Phone Number",
+      "crNumber": "Commercial Registration Number",
+      "vatNumber": "VAT Registration Number",
+      "logo": "Company Logo"
+    },
+    "actions": {
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "uploading_logo": "Uploading logo..."
+    },
+    "errors": {
+      "no_user_logged_in": "No user is currently logged in.",
+      "no_profile_found": "Profile not found.",
+      "failed_to_load_profile": "Failed to load your profile. Please try again.",
+      "failed_to_update_profile": "Failed to update your profile.",
+      "logo_upload_failed": "Logo upload failed."
+    },
+    "messages": {
+      "logo_uploaded_success": "Logo uploaded successfully!",
+      "profile_updated_success": "Profile updated successfully!"
     }
   }
 }

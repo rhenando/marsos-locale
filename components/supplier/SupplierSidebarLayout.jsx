@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 import {
   LayoutDashboard,
   User,
@@ -21,7 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export default function SupplierSidebarLayout({ children }) {
-  const { t } = useTranslation();
+  const t = useTranslations("supplier-sidebar"); // Use next-intl for the sidebar namespace
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -42,9 +42,7 @@ export default function SupplierSidebarLayout({ children }) {
     <div className='flex flex-col md:flex-row min-h-screen bg-gray-50 relative'>
       {/* Desktop sidebar */}
       <aside className='hidden md:block w-64 bg-white border-r p-6'>
-        <h2 className='text-lg font-bold mb-6 text-[#2c6449]'>
-          {t("sidebar.title")}
-        </h2>
+        <h2 className='text-lg font-bold mb-6 text-[#2c6449]'>{t("title")}</h2>
         <nav className='space-y-1'>
           {menuItems.map((item) => (
             <Link
@@ -58,7 +56,7 @@ export default function SupplierSidebarLayout({ children }) {
               )}
             >
               <item.icon className='h-4 w-4' />
-              {t(`sidebar.${item.key}`)}
+              {t(item.key)}
             </Link>
           ))}
         </nav>
@@ -69,9 +67,7 @@ export default function SupplierSidebarLayout({ children }) {
         <button onClick={() => setOpen(true)} className='text-[#2c6449]'>
           <Menu className='h-5 w-5' />
         </button>
-        <h2 className='text-sm font-semibold text-[#2c6449]'>
-          {t("sidebar.title")}
-        </h2>
+        <h2 className='text-sm font-semibold text-[#2c6449]'>{t("title")}</h2>
         <div />
       </div>
 
@@ -80,9 +76,7 @@ export default function SupplierSidebarLayout({ children }) {
         <div className='absolute top-0 left-0 w-full z-30 flex md:hidden'>
           <div className='w-64 h-screen bg-white p-6 shadow-lg'>
             <div className='flex justify-between items-center mb-4'>
-              <h2 className='text-lg font-bold text-[#2c6449]'>
-                {t("sidebar.menu")}
-              </h2>
+              <h2 className='text-lg font-bold text-[#2c6449]'>{t("menu")}</h2>
               <button onClick={() => setOpen(false)}>
                 <X className='h-5 w-5 text-gray-500' />
               </button>
@@ -101,7 +95,7 @@ export default function SupplierSidebarLayout({ children }) {
                   )}
                 >
                   <item.icon className='h-4 w-4' />
-                  {t(`sidebar.${item.key}`)}
+                  {t(item.key)}
                 </Link>
               ))}
             </nav>

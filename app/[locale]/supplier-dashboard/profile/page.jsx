@@ -12,7 +12,7 @@ import {
 import { db } from "@/firebase/config";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -117,7 +117,7 @@ const authFields = [
 ];
 
 export default function ManageProfilePage() {
-  const { t } = useTranslation();
+  const t = useTranslations("supplier-profile");
   const { user: currentUser } = useSelector((s) => s.auth);
   const [formData, setFormData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
@@ -168,13 +168,13 @@ export default function ManageProfilePage() {
       "state_changed",
       null,
       () => {
-        toast.error(t("profile.uploadFailed", { key }));
+        toast.error(t("uploadFailed", { key }));
         setUploadingKey("");
       },
       async () => {
         const url = await getDownloadURL(task.snapshot.ref);
         setFormData((f) => ({ ...f, [key]: url }));
-        toast.success(t("profile.uploaded", { key }));
+        toast.success(t("uploaded", { key }));
         setUploadingKey("");
       }
     );
@@ -188,10 +188,10 @@ export default function ManageProfilePage() {
     if (!currentUser?.uid) return;
     try {
       await updateDoc(doc(db, "users", currentUser.uid), formData);
-      toast.success(t("profile.updated"));
+      toast.success(t("updated"));
       setIsEditing(false);
     } catch {
-      toast.error(t("profile.updateFailed"));
+      toast.error(t("updateFailed"));
     }
   };
 
@@ -206,7 +206,7 @@ export default function ManageProfilePage() {
         <div className='mb-2'>
           <object data={url} type='application/pdf' width='100%' height='200px'>
             <a href={url} target='_blank' rel='noopener'>
-              {t("profile.view", { what: alt })}
+              {t("view", { what: alt })}
             </a>
           </object>
         </div>
@@ -221,7 +221,7 @@ export default function ManageProfilePage() {
     <Card className='max-w-6xl mx-auto my-8 p-4'>
       <CardHeader>
         <div className='flex justify-between items-center'>
-          <CardTitle>{t("profile.manageTitle")}</CardTitle>
+          <CardTitle>{t("manageTitle")}</CardTitle>
           <div className='flex gap-2'>
             {!isEditing && (
               <Button
@@ -229,7 +229,7 @@ export default function ManageProfilePage() {
                 variant='default'
                 onClick={() => setIsEditing(true)}
               >
-                {t("profile.edit")}
+                {t("edit")}
               </Button>
             )}
             <Button
@@ -239,7 +239,7 @@ export default function ManageProfilePage() {
                 window.open(`/supplier/${currentUser.uid}/products`, "_blank")
               }
             >
-              {t("profile.viewProfile")}
+              {t("viewProfile")}
             </Button>
           </div>
         </div>
@@ -251,17 +251,17 @@ export default function ManageProfilePage() {
           {/* COMPANY DETAILS */}
           <div className='pr-4'>
             <h3 className='text-lg font-semibold mb-4'>
-              {t("profile.companyDetails")}
+              {t("companyDetails")}
             </h3>
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
               {companyFields.map((field) => (
                 <div key={field}>
-                  <Label>{t(`profile.${field}`)}</Label>
+                  <Label>{t(`fields.${field}`)}</Label>
                   {["crLicenseUrl", "vatDocUrl", "logoUrl"].includes(field) ? (
                     <>
                       <PreviewOrLink
                         url={formData[field]}
-                        alt={t(`profile.${field}`)}
+                        alt={t(`fields.${field}`)}
                       />
                       <div className='flex items-center gap-2'>
                         <Input
@@ -276,7 +276,7 @@ export default function ManageProfilePage() {
                             variant='destructive'
                             onClick={() => handleDeleteFile(field)}
                           >
-                            {t("profile.delete")}
+                            {t("delete")}
                           </Button>
                         )}
                       </div>
@@ -310,12 +310,12 @@ export default function ManageProfilePage() {
           {/* AUTHORIZED PERSON */}
           <div className='pl-4'>
             <h3 className='text-lg font-semibold mb-4'>
-              {t("profile.authorizedPerson")}
+              {t("authorizedPerson")}
             </h3>
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
               {authFields.map((field) => (
                 <div key={field}>
-                  <Label>{t(`profile.${field}`)}</Label>
+                  <Label>{t(`fields.${field}`)}</Label>
                   <Input
                     className='text-primary'
                     type={
@@ -344,10 +344,10 @@ export default function ManageProfilePage() {
         {isEditing && (
           <div className='flex gap-4'>
             <Button onClick={handleSave} disabled={!!uploadingKey}>
-              {t("profile.save")}
+              {t("save")}
             </Button>
             <Button variant='outline' onClick={() => setIsEditing(false)}>
-              {t("profile.cancel")}
+              {t("cancel")}
             </Button>
           </div>
         )}

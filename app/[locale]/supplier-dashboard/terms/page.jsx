@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import { useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 
 export default function ManageTermsPage() {
-  const { t } = useTranslation();
+  const t = useTranslations("supplier-terms");
   const { user: currentUser, loading: authLoading } = useSelector(
     (state) => state.auth
   );
@@ -30,7 +30,7 @@ export default function ManageTermsPage() {
         setTerms(docSnap.exists() ? docSnap.data().content : "");
       } catch (err) {
         console.error(err);
-        setMessage(t("terms.fetchError"));
+        setMessage(t("fetchError"));
       } finally {
         setLoading(false);
       }
@@ -47,10 +47,10 @@ export default function ManageTermsPage() {
         supplierId: currentUser.uid,
         supplierName: currentUser.displayName || "",
       });
-      setMessage(t("terms.saveSuccess"));
+      setMessage(t("saveSuccess"));
     } catch (err) {
       console.error(err);
-      setMessage(t("terms.saveError"));
+      setMessage(t("saveError"));
     }
   };
 
@@ -65,12 +65,12 @@ export default function ManageTermsPage() {
   return (
     <div className='w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-6'>
       <div className='bg-white p-4 sm:p-6 rounded-xl shadow-md'>
-        <h2 className='text-2xl font-semibold mb-4'>{t("terms.title")}</h2>
+        <h2 className='text-2xl font-semibold mb-4'>{t("title")}</h2>
 
         {loading ? (
           <div className='flex items-center space-x-2 text-sm text-muted-foreground'>
             <Loader2 className='h-5 w-5 animate-spin' />
-            <span>{t("terms.loading")}</span>
+            <span>{t("loading")}</span>
           </div>
         ) : (
           <>
@@ -78,14 +78,14 @@ export default function ManageTermsPage() {
               className='w-full mb-4 min-h-[200px]'
               value={terms}
               onChange={(e) => setTerms(e.target.value)}
-              placeholder={t("terms.placeholder")}
+              placeholder={t("placeholder")}
             />
 
             <Button
               onClick={handleSave}
               className='w-full sm:w-auto bg-primary text-white'
             >
-              {t("terms.saveButton")}
+              {t("saveButton")}
             </Button>
 
             {message && (

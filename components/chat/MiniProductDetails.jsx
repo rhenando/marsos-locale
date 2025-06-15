@@ -11,7 +11,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase/config";
-import { useTranslation } from "react-i18next";
+import { useTranslations, useLocale } from "next-intl";
 import Currency from "@/components/global/CurrencySymbol";
 import { toast } from "sonner";
 
@@ -28,8 +28,9 @@ export default function MiniProductDetails({
     );
   }
 
-  const { i18n } = useTranslation();
-  const locale = i18n.language.startsWith("ar") ? "ar" : "en";
+  const t = useTranslations("miniProduct");
+  const locale = useLocale(); // ← always get the locale at the top
+
   const isSupplier = currentUser.uid === chatMeta.supplierId;
 
   // Local state for editing & selecting
@@ -67,7 +68,9 @@ export default function MiniProductDetails({
   // Add to Cart & delete snapshot
   const handleAddToCart = async () => {
     if (!currentUser?.uid) {
-      toast.error("Please log in to add to cart");
+      toast.error(
+        t("login_first", { defaultMessage: "Please log in to add to cart" })
+      );
       return;
     }
 
@@ -78,14 +81,19 @@ export default function MiniProductDetails({
     const shippingCost = parseFloat(shipLoc.locationPrice) || 0;
     const subtotal = quantity * unitPrice;
 
+    let localizedProductName = "";
+    if (typeof editable.productName === "string") {
+      localizedProductName = editable.productName;
+    } else if (typeof editable.productName === "object") {
+      localizedProductName =
+        editable.productName[locale] || editable.productName.en || "";
+    }
+
     try {
       await addDoc(collection(db, "carts", currentUser.uid, "items"), {
         buyerId: currentUser.uid,
         productId: editable.id,
-        productName:
-          typeof editable.productName === "string"
-            ? editable.productName
-            : editable.productName[locale] || editable.productName.en,
+        productName: localizedProductName,
         productImage: editable.mainImageUrl,
         quantity,
         color: selectedColor,
@@ -94,7 +102,7 @@ export default function MiniProductDetails({
         price: unitPrice,
         shippingCost,
         subtotal,
-        currency: locale === "ar" ? "SAR" : "USD",
+        currency: editable.currency || "SAR",
         supplierId: editable.supplierId,
         supplierName: editable.supplierName,
         createdAt: serverTimestamp(),
@@ -104,10 +112,16 @@ export default function MiniProductDetails({
       await deleteDoc(doc(db, "miniProductsData", chatId));
 
       setOrderPlaced(true);
-      toast.success("Your order has been added to the cart. Thank you!");
+      toast.success(
+        t("added_to_cart", {
+          defaultMessage: "Your order has been added to the cart. Thank you!",
+        })
+      );
     } catch (err) {
       console.error(err);
-      toast.error("Failed to add to cart");
+      toast.error(
+        t("add_to_cart_error", { defaultMessage: "Failed to add to cart" })
+      );
     }
   };
 
@@ -115,7 +129,9 @@ export default function MiniProductDetails({
   if (orderPlaced) {
     return (
       <div className='text-center text-gray-700'>
-        Your order has been added to the cart. Thank you!
+        {t("added_to_cart", {
+          defaultMessage: "Your order has been added to the cart. Thank you!",
+        })}
       </div>
     );
   }
@@ -138,7 +154,7 @@ export default function MiniProductDetails({
       <div className='flex space-x-4'>
         <img src={editable.mainImageUrl} alt={name} className='w-1/4 rounded' />
         <div className='flex space-x-2 overflow-x-auto'>
-          {editable.additionalImageUrls.map((url, i) => (
+          {(editable.additionalImageUrls || []).map((url, i) => (
             <img key={i} src={url} className='w-16 h-16 rounded' alt='' />
           ))}
         </div>
@@ -150,7 +166,7 @@ export default function MiniProductDetails({
           value={selectedColor}
           onChange={(e) => setSelectedColor(e.target.value)}
         >
-          {editable.colors.map((c, i) => (
+          {(editable.colors || []).map((c, i) => (
             <option key={i} value={c}>
               {c}
             </option>
@@ -160,7 +176,7 @@ export default function MiniProductDetails({
           value={selectedSize}
           onChange={(e) => setSelectedSize(e.target.value)}
         >
-          {editable.sizes.map((s, i) => (
+          {(editable.sizes || []).map((s, i) => (
             <option key={i} value={s}>
               {s}
             </option>
@@ -170,7 +186,7 @@ export default function MiniProductDetails({
           value={selectedLocation}
           onChange={(e) => setSelectedLocation(e.target.value)}
         >
-          {tier0.locations.map((l, i) => (
+          {(tier0.locations || []).map((l, i) => (
             <option key={i} value={l.location}>
               {l.location}
             </option>
@@ -181,7 +197,9 @@ export default function MiniProductDetails({
       {/* Summary */}
       <div className='space-y-4'>
         <div className='flex items-center gap-2 text-sm'>
-          <span className='font-medium'>Qty:</span>
+          <span className='font-medium'>
+            {t("qty", { defaultMessage: "Qty:" })}
+          </span>
           <input
             type='number'
             min='1'
@@ -190,7 +208,9 @@ export default function MiniProductDetails({
             className='w-16 border rounded px-2 py-1 text-sm'
           />
           <span>×</span>
-          <span className='font-medium'>Price:</span>
+          <span className='font-medium'>
+            {t("price", { defaultMessage: "Price:" })}
+          </span>
           {isSupplier ? (
             <input
               type='number'
@@ -207,11 +227,15 @@ export default function MiniProductDetails({
 
         <div className='flex justify-between items-center text-sm'>
           <p>
-            <span className='font-medium'>Subtotal:</span>{" "}
+            <span className='font-medium'>
+              {t("subtotal", { defaultMessage: "Subtotal:" })}
+            </span>{" "}
             <Currency amount={subtotal} />
           </p>
           <p className='flex items-center gap-2'>
-            <span className='font-medium'>Shipping:</span>
+            <span className='font-medium'>
+              {t("shipping", { defaultMessage: "Shipping:" })}
+            </span>
             {isSupplier ? (
               <input
                 type='number'
@@ -239,10 +263,10 @@ export default function MiniProductDetails({
           onClick={handleAddToCart}
           className='bg-primary text-white px-4 py-2 rounded hover:bg-green-700'
         >
-          Add to Cart
+          {t("add_to_cart", { defaultMessage: "Add to Cart" })}
         </button>
         <button className='border border-gray-300 px-4 py-2 rounded hover:bg-gray-100'>
-          Review Order
+          {t("review_order", { defaultMessage: "Review Order" })}
         </button>
       </div>
     </div>

@@ -14,7 +14,7 @@ import {
 import { db } from "@/firebase/config";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import CreatableSelect from "react-select/creatable";
-import { useTranslation } from "react-i18next";
+import { useTranslations, useLocale } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -40,8 +40,9 @@ const roleOptions = [
 ];
 
 export default function ManageEmployees({ supplierId: passedSupplierId }) {
-  const { t, i18n } = useTranslation();
-  const isRtl = i18n.dir() === "rtl";
+  const t = useTranslations("supplier-employees");
+  const locale = useLocale();
+  const isRtl = locale === "ar";
 
   const [employees, setEmployees] = useState([]);
   const [newEmployee, setNewEmployee] = useState({
@@ -57,7 +58,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
 
   const fetchEmployees = useCallback(async () => {
     if (!supplierId) {
-      console.error(t("employees.missing_supplier_id"));
+      console.error(t("missing_supplier_id"));
       return;
     }
 
@@ -69,7 +70,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
       const data = await getDocs(q);
       setEmployees(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     } catch (error) {
-      console.error(t("employees.fetch_employees_error"), error);
+      console.error(t("fetch_employees_error"), error);
     }
   }, [supplierId, t]);
 
@@ -77,7 +78,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
     if (!passedSupplierId) {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) setSupplierId(user.uid);
-        else console.error(t("employees.user_not_authenticated"));
+        else console.error(t("user_not_authenticated"));
       });
       return () => unsubscribe();
     }
@@ -89,12 +90,12 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
 
   const addEmployee = async () => {
     if (!supplierId) {
-      console.error(t("employees.missing_supplier_id"));
+      console.error(t("missing_supplier_id"));
       return;
     }
     const { name, role, email, username, password } = newEmployee;
     if (!name || !role || !email || !username || !password) {
-      console.error(t("employees.all_fields_required"));
+      console.error(t("all_fields_required"));
       return;
     }
     try {
@@ -102,11 +103,11 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
         ...newEmployee,
         supplierId,
       });
-      console.log(t("employees.added"));
+      console.log(t("added"));
       fetchEmployees();
       resetForm();
     } catch (error) {
-      console.error(t("employees.add_employee_error"), error);
+      console.error(t("add_employee_error"), error);
     }
   };
 
@@ -114,12 +115,12 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
     try {
       const employeeDoc = doc(db, "employees", id);
       await updateDoc(employeeDoc, newEmployee);
-      console.log(t("employees.updated"));
+      console.log(t("updated"));
       fetchEmployees();
       resetForm();
       setEditMode(null);
     } catch (error) {
-      console.error(t("employees.update_employee_error"), error);
+      console.error(t("update_employee_error"), error);
     }
   };
 
@@ -127,10 +128,10 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
     try {
       const employeeDoc = doc(db, "employees", id);
       await deleteDoc(employeeDoc);
-      console.log(t("employees.deleted"));
+      console.log(t("deleted"));
       fetchEmployees();
     } catch (error) {
-      console.error(t("employees.delete_employee_error"), error);
+      console.error(t("delete_employee_error"), error);
     }
   };
 
@@ -145,24 +146,21 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
   };
 
   return (
-    <div
-      dir={i18n.dir()}
-      className='w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-6'
-    >
+    <div className='w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-6'>
       <Card className='p-4 sm:p-6 mb-6'>
         <h2
           className={`text-xl font-semibold mb-2 ${
             isRtl ? "text-right" : "text-left"
           }`}
         >
-          {t("employees.manage")}
+          {t("manage")}
         </h2>
         <p
           className={`text-sm text-muted-foreground mb-4 ${
             isRtl ? "text-right" : "text-left"
           }`}
         >
-          {t("employees.description")}
+          {t("description")}
         </p>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -172,7 +170,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
                 isRtl ? "text-right" : "text-left"
               }`}
             >
-              {t("employees.name")}
+              {t("name")}
             </label>
             <Input
               className='w-full mb-3'
@@ -180,7 +178,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
               onChange={(e) =>
                 setNewEmployee({ ...newEmployee, name: e.target.value })
               }
-              placeholder={t("employees.enter_name")}
+              placeholder={t("enter_name")}
             />
 
             <label
@@ -188,11 +186,11 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
                 isRtl ? "text-right" : "text-left"
               }`}
             >
-              {t("employees.role")}
+              {t("role")}
             </label>
             <CreatableSelect
               options={roleOptions}
-              placeholder={t("employees.select_or_create_role")}
+              placeholder={t("select_or_create_role")}
               value={
                 newEmployee.role
                   ? { value: newEmployee.role, label: newEmployee.role }
@@ -229,7 +227,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
                 isRtl ? "text-right" : "text-left"
               }`}
             >
-              {t("employees.email")}
+              {t("email")}
             </label>
             <Input
               className='w-full mb-3'
@@ -237,7 +235,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
               onChange={(e) =>
                 setNewEmployee({ ...newEmployee, email: e.target.value })
               }
-              placeholder={t("employees.enter_email")}
+              placeholder={t("enter_email")}
             />
 
             <label
@@ -245,7 +243,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
                 isRtl ? "text-right" : "text-left"
               }`}
             >
-              {t("employees.username")}
+              {t("username")}
             </label>
             <Input
               className='w-full mb-3'
@@ -253,7 +251,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
               onChange={(e) =>
                 setNewEmployee({ ...newEmployee, username: e.target.value })
               }
-              placeholder={t("employees.enter_username")}
+              placeholder={t("enter_username")}
             />
 
             <label
@@ -261,7 +259,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
                 isRtl ? "text-right" : "text-left"
               }`}
             >
-              {t("employees.password")}
+              {t("password")}
             </label>
             <Input
               type='password'
@@ -270,7 +268,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
               onChange={(e) =>
                 setNewEmployee({ ...newEmployee, password: e.target.value })
               }
-              placeholder={t("employees.enter_password")}
+              placeholder={t("enter_password")}
             />
           </div>
         </div>
@@ -279,7 +277,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
           onClick={editMode ? () => updateEmployee(editMode) : addEmployee}
           className='w-full sm:w-auto mt-4'
         >
-          {editMode ? t("employees.update") : t("employees.add")}
+          {editMode ? t("update") : t("add")}
         </Button>
       </Card>
 
@@ -289,7 +287,7 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
             isRtl ? "text-right" : "text-left"
           }`}
         >
-          {t("employees.current")}
+          {t("current")}
         </h3>
 
         <div className='overflow-x-auto'>
@@ -297,19 +295,19 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
             <TableHeader>
               <TableRow>
                 <TableHeadCell className={isRtl ? "text-right" : "text-left"}>
-                  {t("employees.name")}
+                  {t("name")}
                 </TableHeadCell>
                 <TableHeadCell className={isRtl ? "text-right" : "text-left"}>
-                  {t("employees.role")}
+                  {t("role")}
                 </TableHeadCell>
                 <TableHeadCell className={isRtl ? "text-right" : "text-left"}>
-                  {t("employees.email")}
+                  {t("email")}
                 </TableHeadCell>
                 <TableHeadCell className={isRtl ? "text-right" : "text-left"}>
-                  {t("employees.username")}
+                  {t("username")}
                 </TableHeadCell>
                 <TableHeadCell className={isRtl ? "text-right" : "text-left"}>
-                  {t("employees.actions")}
+                  {t("actions")}
                 </TableHeadCell>
               </TableRow>
             </TableHeader>
@@ -338,14 +336,14 @@ export default function ManageEmployees({ supplierId: passedSupplierId }) {
                         setNewEmployee(employee);
                       }}
                     >
-                      {t("employees.edit")}
+                      {t("edit")}
                     </Button>
                     <Button
                       variant='destructive'
                       size='sm'
                       onClick={() => deleteEmployee(employee.id)}
                     >
-                      {t("employees.delete")}
+                      {t("delete")}
                     </Button>
                   </TableCell>
                 </TableRow>

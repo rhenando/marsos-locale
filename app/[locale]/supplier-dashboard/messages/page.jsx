@@ -12,7 +12,7 @@ import {
 import { db } from "@/firebase/config";
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ import {
 import { Loader2 } from "lucide-react";
 
 export default function SupplierMessages() {
-  const { t } = useTranslation();
+  const t = useTranslations("supplier-messages");
   const { user: currentUser, loading: authLoading } = useSelector(
     (s) => s.auth
   );
@@ -44,22 +44,22 @@ export default function SupplierMessages() {
         const chatSources = [
           {
             collectionName: "rfqChats",
-            label: t("messages.labels.rfq"),
+            label: t("rfq"),
             buildPath: (id) => `/chat/rfq/${id}`,
           },
           {
             collectionName: "productChats",
-            label: t("messages.labels.product"),
+            label: t("product"),
             buildPath: (id) => `/chat/product/${id}`,
           },
           {
             collectionName: "cartChats",
-            label: t("messages.labels.cart"),
+            label: t("cart"),
             buildPath: (id) => `/chat/cart/${id}`,
           },
           {
             collectionName: "orderChats",
-            label: t("messages.labels.order"),
+            label: t("order"),
             buildPath: async (id, data) => {
               const billNumber = data.billNumber ?? "";
               let totalAmount = null;
@@ -88,7 +88,7 @@ export default function SupplierMessages() {
           const snap = await getDocs(q);
           for (const docSnap of snap.docs) {
             const data = docSnap.data();
-            let buyerName = t("messages.unknownBuyer");
+            let buyerName = t("unknownBuyer");
             if (data.buyerId) {
               const buyerSnap = await getDoc(doc(db, "users", data.buyerId));
               if (buyerSnap.exists()) {
@@ -131,24 +131,24 @@ export default function SupplierMessages() {
   return (
     <div className='w-full max-w-6xl mx-auto px-4 py-6'>
       <Card className='p-4 sm:p-6'>
-        <h2 className='text-xl font-semibold mb-4'>{t("messages.title")}</h2>
+        <h2 className='text-xl font-semibold mb-4'>{t("title")}</h2>
 
         {loading ? (
           <p className='text-center text-sm text-muted-foreground'>
-            {t("messages.loading")}
+            {t("loading")}
           </p>
         ) : chats.length === 0 ? (
           <p className='text-center text-sm text-muted-foreground'>
-            {t("messages.none")}
+            {t("none")}
           </p>
         ) : (
           <div className='overflow-x-auto'>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("messages.table.buyer")}</TableHead>
-                  <TableHead>{t("messages.table.type")}</TableHead>
-                  <TableHead>{t("messages.table.action")}</TableHead>
+                  <TableHead>{t("buyer")}</TableHead>
+                  <TableHead>{t("type")}</TableHead>
+                  <TableHead>{t("action")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -161,7 +161,7 @@ export default function SupplierMessages() {
                     <TableCell>
                       <Link href={chat.chatPath} target='_blank' rel='noopener'>
                         <Button size='sm' className='bg-green-600 text-white'>
-                          {t("messages.open")}
+                          {t("open")}
                         </Button>
                       </Link>
                     </TableCell>

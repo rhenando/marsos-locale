@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Paperclip, SendHorizontal } from "lucide-react";
 
-const ChatMessages = ({ chatId, chatMeta }) => {
+const ChatMessages = ({ chatId, chatMeta, parentCollection = "cartChats" }) => {
   const containerRef = useRef(null);
   // pull the currentUser and loading state from Redux
   const { user: currentUser, loading: authLoading } = useSelector(
@@ -36,7 +36,16 @@ const ChatMessages = ({ chatId, chatMeta }) => {
         const snap = await getDoc(doc(db, "users", chatMeta.buyerId));
         if (snap.exists()) {
           const data = snap.data();
-          setBuyerName(data.name || data.displayName || "Buyer");
+          setBuyerName(
+            data.authPersonName ||
+              data.name ||
+              data.nameEn ||
+              data.nameAr ||
+              data.displayName ||
+              data.email ||
+              chatMeta.buyerId ||
+              "Buyer"
+          );
         } else {
           setBuyerName("Buyer");
         }

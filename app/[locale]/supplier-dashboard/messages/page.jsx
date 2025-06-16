@@ -89,16 +89,46 @@ export default function SupplierMessages() {
           for (const docSnap of snap.docs) {
             const data = docSnap.data();
             let buyerName = t("unknownBuyer");
-            if (data.buyerId) {
-              const buyerSnap = await getDoc(doc(db, "users", data.buyerId));
+            if (!data.buyerId) {
+              console.log(
+                `[DEBUG] No buyerId found in ${src.collectionName} doc:`,
+                docSnap.id,
+                data
+              );
+            } else {
+              // Try to get the user doc for this buyer
+              const buyerRef = doc(db, "users", data.buyerId);
+              const buyerSnap = await getDoc(buyerRef);
               if (buyerSnap.exists()) {
-                buyerName = buyerSnap.data().name || buyerName;
+                const buyerData = buyerSnap.data();
+                buyerName =
+                  buyerData.authPersonName ||
+                  buyerData.name ||
+                  buyerData.nameEn ||
+                  buyerData.nameAr ||
+                  buyerData.email ||
+                  data.buyerId ||
+                  buyerName;
+                // Debug: which field is used for buyerName
+                console.log(
+                  `[DEBUG] Buyer name for ${data.buyerId}:`,
+                  buyerName,
+                  buyerData
+                );
+              } else {
+                console.log(
+                  `[DEBUG] No user doc found for buyerId:`,
+                  data.buyerId
+                );
               }
             }
+
+            // build path (async support for orderChats)
             const path =
               typeof src.buildPath === "function"
                 ? await src.buildPath(docSnap.id, data)
                 : src.buildPath;
+
             allChats.push({
               id: docSnap.id,
               buyerName,

@@ -287,7 +287,7 @@
       "vat": "ضريبة القيمة المضافة (15%)",
       "total": "الإجمالي"
     },
-    "supplierLabel": "المورد: {{supplier}}",
+    "supplierLabel": "المورد: {supplier}",
     "unknownSupplier": "مورد غير معروف",
     "errors": {
       "minQuantity": "يجب أن تكون الكمية على الأقل 1"
@@ -639,5 +639,57 @@
     "add_to_cart_error": "فشل في إضافة المنتج إلى السلة.",
     "review_order": "مراجعة الطلب",
     "login_first": "يرجى تسجيل الدخول لإضافة المنتج إلى السلة"
+  },
+  "supplier-products": {
+    "title": "منتجاتي",
+    "subtitle": "أدر منتجاتك، أضف منتجات جديدة وعدّل الأسعار والتوافر بسهولة.",
+    "addNew": "إضافة منتج جديد",
+    "image": "الصورة",
+    "name": "اسم المنتج",
+    "location": "الموقع",
+    "actions": "إجراءات",
+    "na": "غير متوفر",
+    "sortBy": "ترتيب حسب",
+    "price": "السعر",
+    "quantity": "الكمية",
+    "searchPlaceholder": "ابحث باسم المنتج...",
+    "filter": "تصفية",
+    "search": "بحث",
+    "previous": "السابق",
+    "next": "التالي",
+    "page": "صفحة",
+    "of": "من",
+    "notAuthorized": "غير مصرح لك بالوصول إلى هذه الصفحة.",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا المنتج؟ هذا الإجراء لا يمكن التراجع عنه.",
+    "DeliveryPrices": "أسعار التوصيل",
+    "PriceTiers": "شرائح الأسعار"
+  },
+  "supplier-orders": {
+    "title": "طلبات المورد",
+    "loading": "جاري تحميل الطلبات...",
+    "none": "لا توجد طلبات.",
+    "na": "غير متوفر",
+    "unknownDate": "تاريخ غير معروف",
+    "sadad": "رقم سداد",
+    "bill": "رقم الفاتورة",
+    "net": "الصافي",
+    "fee": "الرسوم",
+    "total": "الإجمالي",
+    "status": "الحالة",
+    "date": "التاريخ",
+    "actions": "الإجراءات",
+    "invoice": "فاتورة",
+    "reviewInvoice": "عرض الفاتورة",
+    "contactBuyer": "مراسلة المشتري",
+    "paymentApproved": "تمت الموافقة على الدفع",
+    "statuses": {
+      "pending": "قيد الانتظار",
+      "approved": "تمت الموافقة",
+      "failed": "فشل",
+      "cancelled": "ملغي",
+      "delivered": "تم التوصيل",
+      "processing": "قيد المعالجة",
+      "paid": "مدفوع"
+    }
   }
 }

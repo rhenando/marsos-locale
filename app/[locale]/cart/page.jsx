@@ -28,6 +28,7 @@ export default function CartPage() {
   // ✅ next-intl
   const t = useTranslations("cart");
   const locale = useLocale();
+  const dir = locale === "ar" ? "rtl" : "ltr";
 
   const { startNegotiation } = useCartNegotiation();
   const { placeOrder, isPlacing } = usePlaceOrder();

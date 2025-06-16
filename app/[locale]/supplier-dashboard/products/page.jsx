@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslations, useLocale } from "next-intl";
 import { useSelector } from "react-redux";
 import {
   collection,
@@ -34,8 +34,8 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
 
 export default function ProductsPage() {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language || "en";
+  const t = useTranslations("supplier-products");
+  const lang = useLocale();
   const router = useRouter();
   const { user, loading } = useSelector((s) => s.auth);
   const role = user?.role;
@@ -66,7 +66,7 @@ export default function ProductsPage() {
   }, [loading, role, user, lang]);
 
   const handleDelete = async (id) => {
-    if (!confirm(t("products.confirmDelete"))) return;
+    if (!confirm(t("confirmDelete"))) return;
     await deleteDoc(doc(db, "products", id));
     setProducts((prev) => prev.filter((p) => p.id !== id));
   };
@@ -96,19 +96,15 @@ export default function ProductsPage() {
     );
 
   if (role !== "supplier")
-    return <p className='p-4 text-sm'>{t("products.notAuthorized")}</p>;
+    return <p className='p-4 text-sm'>{t("notAuthorized")}</p>;
 
   return (
     <div className='p-4 space-y-4'>
       {/* Header */}
       <div className='flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between'>
         <div>
-          <h2 className='text-lg font-semibold text-green-700'>
-            {t("products.title")}
-          </h2>
-          <p className='text-xs text-muted-foreground'>
-            {t("products.subtitle")}
-          </p>
+          <h2 className='text-lg font-semibold text-green-700'>{t("title")}</h2>
+          <p className='text-xs text-muted-foreground'>{t("subtitle")}</p>
         </div>
         <Button
           size='sm'
@@ -116,7 +112,7 @@ export default function ProductsPage() {
           onClick={() => router.push("/supplier-dashboard/add-products")}
         >
           <Plus className='w-4 h-4 mr-1' />
-          {t("products.addNew")}
+          {t("addNew")}
         </Button>
       </div>
 
@@ -153,22 +149,22 @@ export default function ProductsPage() {
       <div className='flex flex-wrap gap-2'>
         <Select onValueChange={(v) => console.log(v)}>
           <SelectTrigger className='w-[140px] h-9 text-xs'>
-            <SelectValue placeholder={t("products.sortBy")} />
+            <SelectValue placeholder={t("sortBy")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value='location'>{t("products.location")}</SelectItem>
-            <SelectItem value='price'>{t("products.price")}</SelectItem>
-            <SelectItem value='quantity'>{t("products.quantity")}</SelectItem>
+            <SelectItem value='location'>{t("location")}</SelectItem>
+            <SelectItem value='price'>{t("price")}</SelectItem>
+            <SelectItem value='quantity'>{t("quantity")}</SelectItem>
           </SelectContent>
         </Select>
         <Input
-          placeholder={t("products.searchPlaceholder")}
+          placeholder={t("searchPlaceholder")}
           className='max-w-xs h-9 text-xs'
         />
         <Button size='sm' variant='secondary'>
-          {t("products.filter")}
+          {t("filter")}
         </Button>
-        <Button size='sm'>{t("products.search")}</Button>
+        <Button size='sm'>{t("search")}</Button>
       </div>
 
       {/* Table */}
@@ -177,12 +173,12 @@ export default function ProductsPage() {
           <TableHeader>
             <TableRow className='text-xs'>
               <TableHead></TableHead>
-              <TableHead>{t("products.image")}</TableHead>
-              <TableHead>{t("products.name")}</TableHead>
-              <TableHead>{t("products.location")}</TableHead>
+              <TableHead>{t("image")}</TableHead>
+              <TableHead>{t("name")}</TableHead>
+              <TableHead>{t("location")}</TableHead>
               <TableHead>Delivery Prices</TableHead>
               <TableHead>Price Tiers</TableHead>
-              <TableHead>{t("products.actions")}</TableHead>
+              <TableHead>{t("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -203,7 +199,7 @@ export default function ProductsPage() {
                     ? p.productName[lang] || p.productName.en
                     : p.productName}
                 </TableCell>
-                <TableCell>{p.mainLocation || t("products.na")}</TableCell>
+                <TableCell>{p.mainLocation || t("na")}</TableCell>
                 <TableCell>
                   {p.priceRanges?.[0]?.locations?.length > 0 ? (
                     <ul className='pl-4 list-disc space-y-1'>
@@ -214,7 +210,7 @@ export default function ProductsPage() {
                       ))}
                     </ul>
                   ) : (
-                    t("products.na")
+                    t("na")
                   )}
                 </TableCell>
                 <TableCell>
@@ -227,7 +223,7 @@ export default function ProductsPage() {
                       ))}
                     </ul>
                   ) : (
-                    t("products.na")
+                    t("na")
                   )}
                 </TableCell>
                 <TableCell className='flex gap-1'>
@@ -264,10 +260,10 @@ export default function ProductsPage() {
           disabled={currentPage === 1}
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
         >
-          {t("products.previous")}
+          {t("previous")}
         </Button>
         <span className='text-muted-foreground'>
-          {t("products.page")} {currentPage} {t("products.of")} {totalPages}
+          {t("page")} {currentPage} {t("of")} {totalPages}
         </span>
         <Button
           size='sm'
@@ -275,7 +271,7 @@ export default function ProductsPage() {
           disabled={currentPage === totalPages}
           onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
         >
-          {t("products.next")}
+          {t("next")}
         </Button>
       </div>
     </div>

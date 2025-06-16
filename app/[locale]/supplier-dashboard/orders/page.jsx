@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 import { db } from "@/firebase/config";
 import { useSelector } from "react-redux";
 import { collection, getDocs, onSnapshot, doc } from "firebase/firestore";
@@ -21,7 +21,7 @@ import {
 import { Loader2 } from "lucide-react";
 
 export default function SupplierOrdersPage() {
-  const { t } = useTranslation();
+  const t = useTranslations("supplier-orders");
   const router = useRouter();
   const { user: currentUser, loading: authLoading } = useSelector(
     (s) => s.auth
@@ -42,15 +42,15 @@ export default function SupplierOrdersPage() {
         const data = docSnap.data();
         if (!data.items?.some((i) => i.supplierId === currentUser.uid)) return;
 
-        let createdAt = t("orders.unknownDate");
+        let createdAt = t("unknownDate");
         if (data.createdAt?.seconds) {
           createdAt = new Date(data.createdAt.seconds * 1000).toLocaleString();
         } else if (data.createdAt) {
           createdAt = new Date(data.createdAt).toLocaleString();
         }
 
-        const billNumber = data.billNumber || data.orderId || t("orders.na");
-        const sadadNumber = data.sadadNumber || t("orders.na");
+        const billNumber = data.billNumber || data.orderId || t("na");
+        const sadadNumber = data.sadadNumber || t("na");
 
         const rawTotal = data.totalAmount ?? data.total ?? 0;
         const total =
@@ -101,9 +101,7 @@ export default function SupplierOrdersPage() {
           orders.some((o) => o.billNumber === bill)
         ) {
           toast.success(
-            `${t("orders.paymentApproved")} #${bill}: ${
-              payment.paymentAmount
-            } SR`
+            `${t("paymentApproved")} #${bill}: ${payment.paymentAmount} SR`
           );
           setNotifiedBills((s) => new Set(s).add(bill));
         }
@@ -138,16 +136,14 @@ export default function SupplierOrdersPage() {
 
   return (
     <div className='w-full max-w-6xl mx-auto px-4 py-6'>
-      <h2 className='text-2xl font-semibold mb-6'>{t("orders.title")}</h2>
+      <h2 className='text-2xl font-semibold mb-6'>{t("title")}</h2>
 
       {loading ? (
         <p className='text-center text-sm text-muted-foreground'>
-          {t("orders.loading")}
+          {t("loading")}
         </p>
       ) : orders.length === 0 ? (
-        <p className='text-center text-sm text-muted-foreground'>
-          {t("orders.none")}
-        </p>
+        <p className='text-center text-sm text-muted-foreground'>{t("none")}</p>
       ) : (
         <>
           {/* Desktop */}
@@ -156,14 +152,14 @@ export default function SupplierOrdersPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{t("orders.sadad")}</TableHead>
-                    <TableHead>{t("orders.bill")}</TableHead>
-                    <TableHead>{t("orders.net")}</TableHead>
-                    <TableHead>{t("orders.fee")}</TableHead>
-                    <TableHead>{t("orders.total")}</TableHead>
-                    <TableHead>{t("orders.status")}</TableHead>
-                    <TableHead>{t("orders.date")}</TableHead>
-                    <TableHead>{t("orders.actions")}</TableHead>
+                    <TableHead>{t("sadad")}</TableHead>
+                    <TableHead>{t("bill")}</TableHead>
+                    <TableHead>{t("net")}</TableHead>
+                    <TableHead>{t("fee")}</TableHead>
+                    <TableHead>{t("total")}</TableHead>
+                    <TableHead>{t("status")}</TableHead>
+                    <TableHead>{t("date")}</TableHead>
+                    <TableHead>{t("actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
 
@@ -176,7 +172,7 @@ export default function SupplierOrdersPage() {
                       <TableCell>0.00 SR</TableCell>
                       <TableCell>{o.total.toFixed(2)} SR</TableCell>
                       <TableCell className={statusClass(o.status)}>
-                        {t(`orders.statuses.${o.status.toLowerCase()}`)}
+                        {t(`statuses.${o.status.toLowerCase()}`)}
                       </TableCell>
                       <TableCell>{o.createdAt}</TableCell>
                       <TableCell className='space-x-2'>
@@ -194,7 +190,7 @@ export default function SupplierOrdersPage() {
                             }
                             disabled={o.status !== "APPROVED"}
                           >
-                            {t("orders.reviewInvoice")}
+                            {t("reviewInvoice")}
                           </Button>
                         </Link>
                         <Button
@@ -209,7 +205,7 @@ export default function SupplierOrdersPage() {
                               : ""
                           } border-[#2c6449] text-[#2c6449]`}
                         >
-                          {t("orders.contactBuyer")}
+                          {t("contactBuyer")}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -224,29 +220,29 @@ export default function SupplierOrdersPage() {
             {orders.map((o) => (
               <Card key={o.id} className='p-4 shadow-md'>
                 <h3 className='text-sm font-medium mb-2'>
-                  {t("orders.invoice")}{" "}
+                  {t("invoice")}{" "}
                   <span className='text-muted-foreground'>{o.billNumber}</span>
                 </h3>
                 <p className='text-sm text-muted-foreground'>
-                  {t("orders.sadad")}: {o.sadadNumber}
+                  {t("sadad")}: {o.sadadNumber}
                 </p>
                 <p className='text-sm text-muted-foreground'>
-                  {t("orders.net")}: {o.net.toFixed(2)} SR
+                  {t("net")}: {o.net.toFixed(2)} SR
                 </p>
                 <p className='text-sm text-muted-foreground'>
-                  {t("orders.fee")}: 0.00 SR
+                  {t("fee")}: 0.00 SR
                 </p>
                 <p className='text-sm text-muted-foreground'>
-                  {t("orders.total")}: {o.total.toFixed(2)} SR
+                  {t("total")}: {o.total.toFixed(2)} SR
                 </p>
                 <p className='text-sm text-muted-foreground'>
-                  {t("orders.status")}:{" "}
+                  {t("status")}:{" "}
                   <span className={statusClass(o.status)}>
-                    {t(`orders.statuses.${o.status.toLowerCase()}`)}
+                    {t(`statuses.${o.status.toLowerCase()}`)}
                   </span>
                 </p>
                 <p className='text-sm text-muted-foreground mb-2'>
-                  {t("orders.date")}: {o.createdAt}
+                  {t("date")}: {o.createdAt}
                 </p>
                 <Link
                   href={
@@ -260,7 +256,7 @@ export default function SupplierOrdersPage() {
                     className='w-full mb-2'
                     disabled={o.status !== "APPROVED"}
                   >
-                    {t("orders.reviewInvoice")}
+                    {t("reviewInvoice")}
                   </Button>
                 </Link>
                 <Button
@@ -273,7 +269,7 @@ export default function SupplierOrdersPage() {
                     hoveredOrderId === o.id ? "bg-[#2c6449] text-white" : ""
                   } border-[#2c6449] text-[#2c6449]`}
                 >
-                  {t("orders.contactBuyer")}
+                  {t("contactBuyer")}
                 </Button>
               </Card>
             ))}

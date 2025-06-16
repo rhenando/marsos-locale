@@ -104,7 +104,7 @@ export default function ProductChatClient({ chatId }) {
   return (
     <div className='grid grid-cols-1 md:grid-cols-4 gap-6 p-6 max-w-6xl mx-auto'>
       {/* Sidebar: live‐editable product snapshot */}
-      <aside className='col-span-2 border rounded p-4 bg-white space-y-4'>
+      <aside className='col-span-2 border rounded p-4 bg-white space-y-4 capitalize'>
         <h2 className='text-lg font-semibold text-[#2c6449]'>
           Product Details
         </h2>
@@ -127,7 +127,11 @@ export default function ProductChatClient({ chatId }) {
           Chat with {isBuyer ? "Supplier" : "Buyer"}
         </h2>
         <div className='h-[480px] pb-2 border rounded-lg overflow-hidden'>
-          <ChatMessages chatId={chatId} chatMeta={chatMeta} />
+          <ChatMessages
+            chatId={chatId}
+            chatMeta={chatMeta}
+            parentCollection='productChats'
+          />
         </div>
       </section>
     </div>

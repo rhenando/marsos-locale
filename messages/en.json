@@ -651,9 +651,9 @@
     "location": "Delivery Location",
     "add_to_cart": "Add to Cart",
     "added_to_cart": "Your order has been added to the cart. Thank you!",
-    "add_to_cart_error": "Failed to add to cart.",
-    "review_order": "Review Order",
-    "login_first": "Please log in to add to cart"
+    "category_label": "Category",
+    "sub_category_label": "Subcategory",
+    "slug_label": "Slug"
   },
 
   "supplier-products": {
@@ -733,5 +733,101 @@
       "processing": "Processing",
       "paid": "Paid"
     }
+  },
+
+  "CartChat": {
+    "loading": "Loading chat data…",
+    "negotiatedItems": "Negotiated Items",
+    "noCartItemsFound": "No cart items found.",
+    "qty": "Qty",
+    "shipping": "Shipping",
+    "subtotal": "Subtotal",
+    "vat": "VAT ({percent}%)",
+    "total": "Total",
+    "size": "Size",
+    "color": "Color",
+    "delivery": "Delivery",
+    "chatWith": "Chat with",
+    "supplier": "Supplier",
+    "buyer": "Buyer"
+  },
+  "ChatMessages": {
+    "loading": "Loading…",
+    "buyer": "Buyer",
+    "supplier": "Supplier",
+    "typeMessage": "Type your message…",
+    "photosAndVideos": "Photos & videos",
+    "camera": "Camera",
+    "document": "Document",
+    "contact": "Contact",
+    "poll": "Poll",
+    "drawing": "Drawing"
+  },
+  "productChat": {
+    "loading": "Loading…",
+    "chat_not_found": "Chat not found.",
+    "chat_load_error": "Could not load chat.",
+    "chat_connection_error": "Chat connection error.",
+    "product_info_error": "Could not load product info.",
+    "not_authorized": "You’re not authorized to view this chat.",
+    "product_details": "Product Details",
+    "chat_with": "Chat with",
+    "supplier": "Supplier",
+    "buyer": "Buyer"
+  },
+  "rfqChat": {
+    "rfq_details": "RFQ Details",
+    "no_records": "No RFQ records found.",
+    "details": "Details",
+    "category": "Category",
+    "subcategory": "Subcategory",
+    "size": "Size",
+    "color": "Color",
+    "shipping_to": "Shipping To",
+    "download_attachment": "Download Attachment",
+    "sent": "Sent",
+    "chat_with_supplier": "Chat with Supplier"
+  },
+
+  "single-category": {
+    "category": "Category",
+    "noProductsFound": "No products found for this category."
+  },
+  "productDetailsChat": {
+    "loading": "Loading…",
+    "chat_not_found": "Chat not found.",
+    "chat_load_error": "Could not load chat.",
+    "chat_connection_error": "Chat connection error.",
+    "product_not_found": "Product snapshot not found.",
+    "product_load_error": "Could not load product info.",
+    "supplier": "Supplier",
+    "buyer": "Buyer",
+    "product_details": "Product Details",
+    "chat_with": "Chat with {role}"
+  },
+  "buyer-messages": {
+    "messages": "Messages",
+    "search_placeholder": "Search by name…",
+    "all_types": "All Types",
+    "rfq_inquiry": "RFQ Inquiry",
+    "product_inquiry": "Product Inquiry",
+    "cart_inquiry": "Cart Inquiry",
+    "order_inquiry": "Order Inquiry",
+    "name": "Name",
+    "concern_type": "Concern Type",
+    "last_updated": "Last Updated",
+    "actions": "Actions",
+    "open": "Open",
+    "mark_read": "Mark read",
+    "delete": "Delete",
+    "delete_confirm_title": "Are you sure you want to delete this chat?",
+    "delete_confirm_desc": "This action cannot be undone. This will permanently delete the chat and all its messages.",
+    "cancel": "Cancel",
+    "yes_delete": "Yes, delete",
+    "no_activity": "No Activity",
+    "loading": "Loading messages…",
+    "no_messages": "No messages found.",
+    "unknown": "Unknown",
+    "delete_failed": "Failed to delete chat"
   }
 }

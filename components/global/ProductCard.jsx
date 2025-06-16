@@ -53,7 +53,6 @@ const ProductCard = ({ product, currencySymbol, formatNumber }) => {
       toast.error(t("login_first"));
       return;
     }
-
     if (currentUser.uid === product.supplierId) {
       toast.error(t("cannot_chat_own"));
       return;
@@ -75,6 +74,34 @@ const ProductCard = ({ product, currencySymbol, formatNumber }) => {
         });
       }
 
+      // --- FALLBACK LOGIC START ---
+      const supplierId = product.supplierId;
+      let supplierName = product.supplierName;
+      let supplierNumber = product.supplierNumber;
+
+      if (!supplierName || !supplierNumber) {
+        const supplierRef = doc(db, "users", supplierId);
+        const supplierSnap = await getDoc(supplierRef);
+        if (supplierSnap.exists()) {
+          const supplier = supplierSnap.data();
+          if (!supplierName) {
+            supplierName =
+              supplier.companyName ||
+              supplier.authPersonName ||
+              supplier.companyNameAr ||
+              "";
+          }
+          if (!supplierNumber) {
+            supplierNumber =
+              supplier.companyPhone ||
+              supplier.phone ||
+              supplier.authPersonMobile ||
+              "";
+          }
+        }
+      }
+      // --- FALLBACK LOGIC END ---
+
       const payload = {
         id: product.id,
         productName: product.productName,
@@ -82,11 +109,9 @@ const ProductCard = ({ product, currencySymbol, formatNumber }) => {
         category: product.category,
         subCategory: product.subCategory,
         mainLocation: product.mainLocation,
-        supplierId: product.supplierId,
-        supplierName: product.supplierName,
-        ...(product.supplierNumber !== undefined && {
-          supplierNumber: product.supplierNumber,
-        }),
+        supplierId,
+        supplierName,
+        supplierNumber,
         mainImageUrl: product.mainImageUrl,
         additionalImageUrls: product.additionalImageUrls,
         colors: product.colors,

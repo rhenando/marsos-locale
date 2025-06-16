@@ -5,7 +5,7 @@ import CreatableSelect from "react-select/creatable";
 import Select from "react-select";
 import { db, storage } from "@/firebase/config";
 import { useSelector } from "react-redux";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   collection,
   getDocs,
@@ -25,6 +25,7 @@ const RfqModal = ({ show, onClose }) => {
   const storedRole = useSelector((state) => state.auth.userData?.role);
 
   const t = useTranslations("rfq");
+  const locale = useLocale();
   const router = useRouter();
 
   const [categories, setCategories] = useState([]);
@@ -58,40 +59,92 @@ const RfqModal = ({ show, onClose }) => {
         const snapshot = await getDocs(collection(db, "products"));
         const catMap = {};
         const catList = [];
+        const subcatMap = {};
 
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
           if (data.category && data.supplierName && data.supplierId) {
-            if (!catList.find((c) => c.value === data.category)) {
-              catList.push({ value: data.category, label: data.category });
+            // Categories
+            const catVal = data.category;
+            const catLabel = catVal[locale] || catVal.en;
+            if (!catList.some((c) => c.value.en === catVal.en)) {
+              catList.push({ value: catVal, label: catLabel });
             }
-            catMap[data.category] ??= new Map();
-            catMap[data.category].set(data.supplierId, {
+            catMap[catVal.en] ??= new Map();
+            catMap[catVal.en].set(data.supplierId, {
               supplierId: data.supplierId,
               supplierName: data.supplierName,
             });
+
+            // Subcategories (per category)
+            if (data.subCategory) {
+              const subVal = data.subCategory;
+              const subLabel = subVal[locale] || subVal.en;
+              subcatMap[catVal.en] ??= [];
+              if (!subcatMap[catVal.en].some((s) => s.value.en === subVal.en)) {
+                subcatMap[catVal.en].push({ value: subVal, label: subLabel });
+              }
+            }
           }
         });
 
+        // Convert supplier mapping to array
         const cleaned = {};
-        for (const cat of Object.keys(catMap)) {
-          cleaned[cat] = Array.from(catMap[cat].values());
+        for (const catEn of Object.keys(catMap)) {
+          cleaned[catEn] = Array.from(catMap[catEn].values());
         }
 
         setCategories(catList);
         setCategorySuppliers(cleaned);
+        setSubcategoryOptions([]); // Reset on fresh fetch
+
+        // If a category is selected, set its subcategory options
+        if (selectedCategory) {
+          const subopts = subcatMap[selectedCategory.value.en] || [];
+          setSubcategoryOptions(subopts);
+        }
       } catch {
         toast.error(t("fetch_categories_error"));
       }
     };
     fetchCategories();
-  }, [t]);
+    // eslint-disable-next-line
+  }, [locale, t]);
+
+  // When category changes, update subcategory options
+  useEffect(() => {
+    if (selectedCategory && categories.length) {
+      // Subcategory options for selected category
+      const fetchSubcats = async () => {
+        const snapshot = await getDocs(collection(db, "products"));
+        const subcatSet = new Set();
+        const subcatArr = [];
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          if (
+            data.category &&
+            data.subCategory &&
+            data.category.en === selectedCategory.value.en
+          ) {
+            const subVal = data.subCategory;
+            const subLabel = subVal[locale] || subVal.en;
+            if (!subcatSet.has(subVal.en)) {
+              subcatSet.add(subVal.en);
+              subcatArr.push({ value: subVal, label: subLabel });
+            }
+          }
+        });
+        setSubcategoryOptions(subcatArr);
+      };
+      fetchSubcats();
+      setSelectedSubcategory(null);
+    }
+    // eslint-disable-next-line
+  }, [selectedCategory, locale]);
 
   const handleFileChange = (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
-
-    // 1) Guard against null currentUser
     if (!currentUser) {
       toast.warning(t("must_login"));
       return;
@@ -100,7 +153,6 @@ const RfqModal = ({ show, onClose }) => {
     setUploading(true);
     setFile(f);
 
-    // 2) Now safe to use currentUser.uid
     const storageRef = ref(storage, `rfq_files/${currentUser.uid}/${f.name}`);
     const uploadTask = uploadBytesResumable(storageRef, f);
 
@@ -143,9 +195,10 @@ const RfqModal = ({ show, onClose }) => {
       const userSnap = storedRole
         ? null
         : await getDoc(doc(db, "users", currentUser.uid));
-      const role = storedRole || userSnap.data()?.role || "buyer";
+      const role = storedRole || userSnap?.data()?.role || "buyer";
 
-      const suppliers = categorySuppliers[selectedCategory.value] || [];
+      // Category suppliers now mapped by category.en
+      const suppliers = categorySuppliers[selectedCategory.value.en] || [];
       if (suppliers.length === 0) {
         toast.error(t("no_suppliers"));
         setSubmitting(false);
@@ -156,8 +209,8 @@ const RfqModal = ({ show, onClose }) => {
         suppliers.map(async (supplier) => {
           const rfqRef = await addDoc(collection(db, "rfqs"), {
             buyerId: currentUser.uid,
-            category: selectedCategory.value,
-            subcategory: selectedSubcategory.value,
+            category: selectedCategory.value, // {en, ar}
+            subcategory: selectedSubcategory.value, // {en, ar}
             productDetails: productDetails || "No product details available",
             fileURL,
             size,
@@ -254,6 +307,8 @@ const RfqModal = ({ show, onClose }) => {
                 onChange={setSelectedCategory}
                 isClearable
                 className='w-full text-xs'
+                getOptionLabel={(opt) => opt.label}
+                getOptionValue={(opt) => opt.value.en}
               />
               {errors.selectedCategory && (
                 <p className='text-red-500 text-[10px]'>
@@ -268,12 +323,14 @@ const RfqModal = ({ show, onClose }) => {
                 value={selectedSubcategory}
                 onChange={setSelectedSubcategory}
                 onCreateOption={(val) => {
-                  const newOpt = { value: val, label: val };
+                  const newOpt = { value: { en: val, ar: val }, label: val };
                   setSubcategoryOptions((prev) => [...prev, newOpt]);
                   setSelectedSubcategory(newOpt);
                 }}
                 isClearable
                 className='w-full text-xs'
+                getOptionLabel={(opt) => opt.label}
+                getOptionValue={(opt) => opt.value.en}
               />
               {errors.selectedSubcategory && (
                 <p className='text-red-500 text-[10px]'>

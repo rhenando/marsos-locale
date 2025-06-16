@@ -1,4 +1,3 @@
-// components/chat/RfqChatClient.jsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -13,10 +12,12 @@ import {
 import { useSelector } from "react-redux";
 import { db } from "@/firebase/config";
 import ChatMessages from "@/components/chat/ChatMessages";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function RfqChatClient({ chatId }) {
-  // Read currentUser from Redux instead of useAuth()
   const currentUser = useSelector((state) => state.auth.user);
+  const t = useTranslations("rfqChat");
+  const locale = useLocale();
 
   const [chatMeta, setChatMeta] = useState(null);
   const [rfqList, setRfqList] = useState([]);
@@ -29,7 +30,7 @@ export default function RfqChatClient({ chatId }) {
         const data = snap.data();
         setChatMeta({
           ...data,
-          createdAt: data.createdAt?.toDate()?.toISOString() || null,
+          createdAt: data.createdAt?.toDate?.().toISOString() || null,
         });
       }
     });
@@ -67,29 +68,37 @@ export default function RfqChatClient({ chatId }) {
     <div className='grid grid-cols-1 md:grid-cols-3 gap-6 p-6 max-w-6xl mx-auto'>
       {/* RFQ Details Pane */}
       <aside className='col-span-1 border rounded p-4 bg-white space-y-4'>
-        <h2 className='text-lg font-semibold text-[#2c6449]'>RFQ Details</h2>
+        <h2 className='text-lg font-semibold text-[#2c6449]'>
+          {t("rfq_details")}
+        </h2>
         {rfqList.length === 0 ? (
-          <p className='text-sm text-red-500'>No RFQ records found.</p>
+          <p className='text-sm text-red-500'>{t("no_records")}</p>
         ) : (
           rfqList.map((item) => (
             <div key={item.id} className='border-b pb-2'>
               <p>
-                <strong>Details:</strong> {item.productDetails}
+                <strong>{t("details")}:</strong> {item.productDetails}
               </p>
               <p>
-                <strong>Category:</strong> {item.category}
+                <strong>{t("category")}:</strong>{" "}
+                {typeof item.category === "object"
+                  ? item.category[locale] || item.category.en
+                  : item.category}
               </p>
               <p>
-                <strong>Subcategory:</strong> {item.subcategory}
+                <strong>{t("subcategory")}:</strong>{" "}
+                {typeof item.subcategory === "object"
+                  ? item.subcategory[locale] || item.subcategory.en
+                  : item.subcategory}
               </p>
               <p>
-                <strong>Size:</strong> {item.size}
+                <strong>{t("size")}:</strong> {item.size}
               </p>
               <p>
-                <strong>Color:</strong> {item.color}
+                <strong>{t("color")}:</strong> {item.color}
               </p>
               <p>
-                <strong>Shipping To:</strong> {item.shipping}
+                <strong>{t("shipping_to")}:</strong> {item.shipping}
               </p>
               {item.fileURL && (
                 <p>
@@ -99,12 +108,12 @@ export default function RfqChatClient({ chatId }) {
                     rel='noopener noreferrer'
                     className='text-blue-600 underline text-sm'
                   >
-                    Download Attachment
+                    {t("download_attachment")}
                   </a>
                 </p>
               )}
               <p className='text-xs text-gray-500'>
-                Sent: {new Date(item.timestamp).toLocaleString()}
+                {t("sent")}: {new Date(item.timestamp).toLocaleString()}
               </p>
             </div>
           ))
@@ -114,7 +123,7 @@ export default function RfqChatClient({ chatId }) {
       {/* Chat Pane */}
       <section className='col-span-2 flex flex-col'>
         <h2 className='text-lg font-semibold mb-3 text-[#2c6449]'>
-          Chat with Supplier
+          {t("chat_with_supplier")}
         </h2>
         <div className='h-[480px] pb-2 border rounded-lg overflow-hidden'>
           <ChatMessages chatId={chatId} chatMeta={chatMeta} />

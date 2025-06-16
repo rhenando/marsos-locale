@@ -636,9 +636,9 @@
     "location": "مكان التوصيل",
     "add_to_cart": "أضف إلى السلة",
     "added_to_cart": "تمت إضافة طلبك إلى السلة. شكرًا لك!",
-    "add_to_cart_error": "فشل في إضافة المنتج إلى السلة.",
-    "review_order": "مراجعة الطلب",
-    "login_first": "يرجى تسجيل الدخول لإضافة المنتج إلى السلة"
+    "category_label": "الفئة",
+    "sub_category_label": "الفئة الفرعية",
+    "slug_label": "المعرف"
   },
   "supplier-products": {
     "title": "منتجاتي",
@@ -691,5 +691,100 @@
       "processing": "قيد المعالجة",
       "paid": "مدفوع"
     }
+  },
+
+  "CartChat": {
+    "loading": "جاري تحميل بيانات المحادثة…",
+    "negotiatedItems": "العناصر المتفاوض عليها",
+    "noCartItemsFound": "لم يتم العثور على عناصر في السلة.",
+    "qty": "الكمية",
+    "shipping": "الشحن",
+    "subtotal": "المجموع الفرعي",
+    "vat": "ضريبة القيمة المضافة ({percent}٪)",
+    "total": "الإجمالي",
+    "size": "المقاس",
+    "color": "اللون",
+    "delivery": "التوصيل",
+    "chatWith": "الدردشة مع",
+    "supplier": "المورد",
+    "buyer": "المشتري"
+  },
+  "ChatMessages": {
+    "loading": "جاري التحميل…",
+    "buyer": "المشتري",
+    "supplier": "المورد",
+    "typeMessage": "اكتب رسالتك…",
+    "photosAndVideos": "الصور والفيديوهات",
+    "camera": "الكاميرا",
+    "document": "مستند",
+    "contact": "جهة اتصال",
+    "poll": "استطلاع رأي",
+    "drawing": "رسم"
+  },
+  "productChat": {
+    "loading": "جاري التحميل…",
+    "chat_not_found": "المحادثة غير موجودة.",
+    "chat_load_error": "تعذر تحميل المحادثة.",
+    "chat_connection_error": "خطأ في الاتصال بالمحادثة.",
+    "product_info_error": "تعذر تحميل بيانات المنتج.",
+    "not_authorized": "غير مصرح لك بعرض هذه المحادثة.",
+    "product_details": "تفاصيل المنتج",
+    "chat_with": "الدردشة مع",
+    "supplier": "المورد",
+    "buyer": "المشتري"
+  },
+  "rfqChat": {
+    "rfq_details": "تفاصيل طلب عرض السعر",
+    "no_records": "لا توجد سجلات لعروض الأسعار.",
+    "details": "التفاصيل",
+    "category": "الفئة",
+    "subcategory": "الفئة الفرعية",
+    "size": "المقاس",
+    "color": "اللون",
+    "shipping_to": "الشحن إلى",
+    "download_attachment": "تحميل المرفق",
+    "sent": "أُرسلت",
+    "chat_with_supplier": "الدردشة مع المورد"
+  },
+  "single-category": {
+    "category": "الفئة",
+    "noProductsFound": "لم يتم العثور على منتجات لهذه الفئة."
+  },
+  "productDetailsChat": {
+    "loading": "جاري التحميل…",
+    "chat_not_found": "المحادثة غير موجودة.",
+    "chat_load_error": "تعذر تحميل المحادثة.",
+    "chat_connection_error": "خطأ في الاتصال بالمحادثة.",
+    "product_not_found": "لم يتم العثور على ملخص المنتج.",
+    "product_load_error": "تعذر تحميل معلومات المنتج.",
+    "supplier": "المورد",
+    "buyer": "المشتري",
+    "product_details": "تفاصيل المنتج",
+    "chat_with": "الدردشة مع {role}"
+  },
+  "buyer-messages": {
+    "messages": "الرسائل",
+    "search_placeholder": "البحث بالاسم…",
+    "all_types": "كل الأنواع",
+    "rfq_inquiry": "استفسار عرض سعر",
+    "product_inquiry": "استفسار منتج",
+    "cart_inquiry": "استفسار سلة",
+    "order_inquiry": "استفسار طلب",
+    "name": "الاسم",
+    "concern_type": "نوع الاستفسار",
+    "last_updated": "آخر تحديث",
+    "actions": "الإجراءات",
+    "open": "فتح",
+    "mark_read": "تعليم كمقروء",
+    "delete": "حذف",
+    "delete_confirm_title": "هل أنت متأكد أنك تريد حذف هذه المحادثة؟",
+    "delete_confirm_desc": "لا يمكن التراجع عن هذا الإجراء. سيؤدي إلى حذف المحادثة وجميع رسائلها نهائياً.",
+    "cancel": "إلغاء",
+    "yes_delete": "نعم، احذف",
+    "no_activity": "لا يوجد نشاط",
+    "loading": "جارٍ تحميل الرسائل…",
+    "no_messages": "لم يتم العثور على رسائل.",
+    "unknown": "غير معروف",
+    "delete_failed": "فشل حذف المحادثة"
   }
 }

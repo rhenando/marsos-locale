@@ -15,20 +15,32 @@ import { useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Paperclip, SendHorizontal } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
+
+const attachmentOptions = [
+  "photosAndVideos",
+  "camera",
+  "document",
+  "contact",
+  "poll",
+  "drawing",
+];
 
 const ChatMessages = ({ chatId, chatMeta, parentCollection = "cartChats" }) => {
   const containerRef = useRef(null);
-  // pull the currentUser and loading state from Redux
   const { user: currentUser, loading: authLoading } = useSelector(
     (state) => state.auth
   );
-
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState("");
   const bottomRef = useRef(null);
   const [buyerName, setBuyerName] = useState("");
 
-  // 1️⃣  Fetch buyer's name
+  // next-intl hooks
+  const t = useTranslations("ChatMessages");
+  const locale = useLocale();
+
+  // Fetch buyer's name
   useEffect(() => {
     if (!chatMeta?.buyerId) return;
     const fetchName = async () => {
@@ -44,20 +56,21 @@ const ChatMessages = ({ chatId, chatMeta, parentCollection = "cartChats" }) => {
               data.displayName ||
               data.email ||
               chatMeta.buyerId ||
-              "Buyer"
+              t("buyer")
           );
         } else {
-          setBuyerName("Buyer");
+          setBuyerName(t("buyer"));
         }
       } catch (e) {
         console.error(e);
-        setBuyerName("Buyer");
+        setBuyerName(t("buyer"));
       }
     };
     fetchName();
-  }, [chatMeta?.buyerId]);
+    // eslint-disable-next-line
+  }, [chatMeta?.buyerId, t]);
 
-  // 2️⃣  Listen for chat messages in real time
+  // Listen for chat messages in real time
   useEffect(() => {
     if (!chatId) return;
     const messagesRef = collection(db, "cartChats", chatId, "messages");
@@ -66,7 +79,6 @@ const ChatMessages = ({ chatId, chatMeta, parentCollection = "cartChats" }) => {
     const unsub = onSnapshot(q, (snap) => {
       const msgs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       setMessages(msgs);
-      // scroll to bottom after a slight delay
       setTimeout(() => {
         const el = containerRef.current;
         if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
@@ -76,7 +88,7 @@ const ChatMessages = ({ chatId, chatMeta, parentCollection = "cartChats" }) => {
     return () => unsub();
   }, [chatId]);
 
-  // 3️⃣  Send a new message
+  // Send a new message
   const sendMessage = async () => {
     if (!newMsg.trim() || !currentUser) return;
 
@@ -84,7 +96,7 @@ const ChatMessages = ({ chatId, chatMeta, parentCollection = "cartChats" }) => {
     const senderRole = isBuyer ? "buyer" : "supplier";
     const senderName = isBuyer
       ? buyerName
-      : currentUser.displayName || "Supplier";
+      : currentUser.displayName || t("supplier");
 
     try {
       await addDoc(collection(db, "cartChats", chatId, "messages"), {
@@ -100,9 +112,9 @@ const ChatMessages = ({ chatId, chatMeta, parentCollection = "cartChats" }) => {
     }
   };
 
-  // Still loading auth or no user?
+  // Loading
   if (authLoading || !currentUser) {
-    return <p className='p-6 text-center text-gray-500'>Loading…</p>;
+    return <p className='p-6 text-center text-gray-500'>{t("loading")}</p>;
   }
 
   return (
@@ -127,17 +139,22 @@ const ChatMessages = ({ chatId, chatMeta, parentCollection = "cartChats" }) => {
               }`}
             >
               <div className='text-xs text-gray-500 mb-1 font-medium'>
-                {msg.senderRole === "buyer" ? "🧍 Buyer" : "🏪 Supplier"} •{" "}
-                {displayName}
+                {msg.senderRole === "buyer"
+                  ? `${t("buyer")}`
+                  : `${t("supplier")}`}{" "}
+                • {displayName}
               </div>
               <p className='whitespace-pre-wrap text-gray-800'>{msg.text}</p>
               <span className='text-[10px] text-gray-500 mt-1 block'>
-                {new Date(
-                  msg.createdAt?.seconds * 1000 || Date.now()
-                ).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {msg.createdAt?.seconds
+                  ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString(
+                      locale,
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )
+                  : ""}
               </span>
               <div
                 className={`absolute w-0 h-0 border-t-8 border-b-8 top-2 ${
@@ -166,24 +183,18 @@ const ChatMessages = ({ chatId, chatMeta, parentCollection = "cartChats" }) => {
             variant='ghost'
             size='icon'
             className='text-gray-500 hover:text-gray-800'
+            tabIndex={-1}
           >
             <Paperclip size={20} />
           </Button>
           <div className='absolute bottom-10 left-0 z-10 hidden group-hover:block bg-white border rounded shadow text-sm text-gray-800 w-40'>
             <ul className='py-2'>
-              {[
-                "Photos & videos",
-                "Camera",
-                "Document",
-                "Contact",
-                "Poll",
-                "Drawing",
-              ].map((opt) => (
+              {attachmentOptions.map((optKey) => (
                 <li
-                  key={opt}
+                  key={optKey}
                   className='px-3 py-1 hover:bg-gray-100 cursor-pointer'
                 >
-                  {opt}
+                  {t(optKey)}
                 </li>
               ))}
             </ul>
@@ -193,7 +204,7 @@ const ChatMessages = ({ chatId, chatMeta, parentCollection = "cartChats" }) => {
         <Input
           value={newMsg}
           onChange={(e) => setNewMsg(e.target.value)}
-          placeholder='Type your message…'
+          placeholder={t("typeMessage")}
           className='flex-1'
         />
 

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import {
   doc,
-  onSnapshot,
   updateDoc,
   serverTimestamp,
   collection,
@@ -15,38 +14,47 @@ import { useTranslations, useLocale } from "next-intl";
 import Currency from "@/components/global/CurrencySymbol";
 import { toast } from "sonner";
 
+// Helper: safely get localized value from {en, ar} or just string
+function getLocalized(field, locale) {
+  if (!field) return "";
+  if (typeof field === "string") return field;
+  if (typeof field === "object" && (field.ar || field.en)) {
+    return field[locale] || field.en || "";
+  }
+  return "";
+}
+
 export default function MiniProductDetails({
   data,
   chatMeta,
   currentUser,
   chatId,
 }) {
-  // Fallback when no data
-  if (!data) {
-    return (
-      <p className='text-center text-gray-500'>No product details available!</p>
-    );
-  }
-
   const t = useTranslations("miniProduct");
-  const locale = useLocale(); // ← always get the locale at the top
+  const locale = useLocale();
 
-  const isSupplier = currentUser.uid === chatMeta.supplierId;
-
-  // Local state for editing & selecting
-  const [editable, setEditable] = useState(data);
+  // All hooks must be unconditional and always at the top
+  const [editable, setEditable] = useState(data || {});
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState(data.colors?.[0] || "");
-  const [selectedSize, setSelectedSize] = useState(data.sizes?.[0] || "");
+  const [selectedColor, setSelectedColor] = useState(data?.colors?.[0] || "");
+  const [selectedSize, setSelectedSize] = useState(data?.sizes?.[0] || "");
   const [selectedLocation, setSelectedLocation] = useState(
-    data.priceRanges?.[0]?.locations?.[0]?.location || ""
+    data?.priceRanges?.[0]?.locations?.[0]?.location || ""
   );
   const [orderPlaced, setOrderPlaced] = useState(false);
 
-  // Keep editable in sync if data prop changes
   useEffect(() => {
-    setEditable(data);
+    if (data) {
+      setEditable(data);
+      setSelectedColor(data?.colors?.[0] || "");
+      setSelectedSize(data?.sizes?.[0] || "");
+      setSelectedLocation(
+        data?.priceRanges?.[0]?.locations?.[0]?.location || ""
+      );
+    }
   }, [data]);
+
+  const isSupplier = !!chatMeta && currentUser?.uid === chatMeta?.supplierId;
 
   // Firestore updater helper
   const handleUpdate = async (path, value) => {
@@ -68,26 +76,18 @@ export default function MiniProductDetails({
   // Add to Cart & delete snapshot
   const handleAddToCart = async () => {
     if (!currentUser?.uid) {
-      toast.error(
-        t("login_first", { defaultMessage: "Please log in to add to cart" })
-      );
+      toast.error(t("pleaseLogin"));
       return;
     }
-
-    const tier0 = editable.priceRanges[0] || { price: "0", locations: [] };
+    const tier0 = editable.priceRanges?.[0] || { price: "0", locations: [] };
     const unitPrice = parseFloat(tier0.price) || 0;
     const shipLoc =
-      tier0.locations.find((l) => l.location === selectedLocation) || {};
+      (tier0.locations || []).find((l) => l.location === selectedLocation) ||
+      {};
     const shippingCost = parseFloat(shipLoc.locationPrice) || 0;
     const subtotal = quantity * unitPrice;
 
-    let localizedProductName = "";
-    if (typeof editable.productName === "string") {
-      localizedProductName = editable.productName;
-    } else if (typeof editable.productName === "object") {
-      localizedProductName =
-        editable.productName[locale] || editable.productName.en || "";
-    }
+    let localizedProductName = getLocalized(editable.productName, locale);
 
     try {
       await addDoc(collection(db, "carts", currentUser.uid, "items"), {
@@ -112,38 +112,38 @@ export default function MiniProductDetails({
       await deleteDoc(doc(db, "miniProductsData", chatId));
 
       setOrderPlaced(true);
-      toast.success(
-        t("added_to_cart", {
-          defaultMessage: "Your order has been added to the cart. Thank you!",
-        })
-      );
+      toast.success(t("added_to_cart"));
     } catch (err) {
       console.error(err);
-      toast.error(
-        t("add_to_cart_error", { defaultMessage: "Failed to add to cart" })
-      );
+      toast.error(t("addToCartFailed"));
     }
   };
 
-  // After ordering, show thank‐you
-  if (orderPlaced) {
-    return (
-      <div className='text-center text-gray-700'>
-        {t("added_to_cart", {
-          defaultMessage: "Your order has been added to the cart. Thank you!",
-        })}
-      </div>
-    );
+  // EARLY RETURN (after all hooks): no data
+  if (!data) {
+    return <p className='text-center text-gray-500'>{t("noDetails")}</p>;
   }
 
-  // Derive display
-  const rawName = editable.productName;
-  const name =
-    typeof rawName === "string" ? rawName : rawName[locale] || rawName.en || "";
-  const tier0 = editable.priceRanges[0] || { price: "0", locations: [] };
+  // After ordering, show thank‐you
+  if (orderPlaced) {
+    return <div className='text-center text-gray-700'>{t("orderAdded")}</div>;
+  }
+
+  // Derive display (all safe after hooks and null-guards)
+  const name = getLocalized(editable.productName, locale);
+  const category =
+    getLocalized(editable.category, locale) ||
+    getLocalized(editable.Category, locale) ||
+    "";
+  const subCategory =
+    getLocalized(editable.subCategory, locale) ||
+    getLocalized(editable.subcategory, locale) ||
+    "";
+
+  const tier0 = editable.priceRanges?.[0] || { price: "0", locations: [] };
   const unitPrice = parseFloat(tier0.price) || 0;
   const shipTier =
-    tier0.locations.find((l) => l.location === selectedLocation) || {};
+    (tier0.locations || []).find((l) => l.location === selectedLocation) || {};
   const shippingCost = parseFloat(shipTier.locationPrice) || 0;
   const subtotal = quantity * unitPrice;
 
@@ -152,12 +152,30 @@ export default function MiniProductDetails({
       {/* Title & Images */}
       <h2 className='text-lg font-semibold'>{name}</h2>
       <div className='flex space-x-4'>
-        <img src={editable.mainImageUrl} alt={name} className='w-1/4 rounded' />
+        <img
+          src={editable.mainImageUrl}
+          alt={name}
+          className='w-1/4 rounded object-contain'
+        />
         <div className='flex space-x-2 overflow-x-auto'>
           {(editable.additionalImageUrls || []).map((url, i) => (
-            <img key={i} src={url} className='w-16 h-16 rounded' alt='' />
+            <img
+              key={i}
+              src={url}
+              className='w-16 h-16 rounded object-contain'
+              alt=''
+            />
           ))}
         </div>
+      </div>
+
+      <div className='text-sm text-gray-700 flex flex-col gap-1'>
+        <span>
+          <b>{t("category_label")}:</b> {category}
+        </span>
+        <span>
+          <b>{t("sub_category_label")}:</b> {subCategory}
+        </span>
       </div>
 
       {/* Selectors */}
@@ -197,9 +215,7 @@ export default function MiniProductDetails({
       {/* Summary */}
       <div className='space-y-4'>
         <div className='flex items-center gap-2 text-sm'>
-          <span className='font-medium'>
-            {t("qty", { defaultMessage: "Qty:" })}
-          </span>
+          <span className='font-medium'>{t("qty")}</span>
           <input
             type='number'
             min='1'
@@ -208,9 +224,7 @@ export default function MiniProductDetails({
             className='w-16 border rounded px-2 py-1 text-sm'
           />
           <span>×</span>
-          <span className='font-medium'>
-            {t("price", { defaultMessage: "Price:" })}
-          </span>
+          <span className='font-medium'>{t("price")}</span>
           {isSupplier ? (
             <input
               type='number'
@@ -227,21 +241,17 @@ export default function MiniProductDetails({
 
         <div className='flex justify-between items-center text-sm'>
           <p>
-            <span className='font-medium'>
-              {t("subtotal", { defaultMessage: "Subtotal:" })}
-            </span>{" "}
+            <span className='font-medium'>{t("subtotal")}</span>{" "}
             <Currency amount={subtotal} />
           </p>
           <p className='flex items-center gap-2'>
-            <span className='font-medium'>
-              {t("shipping", { defaultMessage: "Shipping:" })}
-            </span>
+            <span className='font-medium'>{t("shipping")}</span>
             {isSupplier ? (
               <input
                 type='number'
                 value={shippingCost}
                 onChange={(e) => {
-                  const newLocs = [...tier0.locations];
+                  const newLocs = [...(tier0.locations || [])];
                   const idx = newLocs.findIndex(
                     (l) => l.location === selectedLocation
                   );
@@ -263,10 +273,10 @@ export default function MiniProductDetails({
           onClick={handleAddToCart}
           className='bg-primary text-white px-4 py-2 rounded hover:bg-green-700'
         >
-          {t("add_to_cart", { defaultMessage: "Add to Cart" })}
+          {t("addToCart")}
         </button>
         <button className='border border-gray-300 px-4 py-2 rounded hover:bg-gray-100'>
-          {t("review_order", { defaultMessage: "Review Order" })}
+          {t("reviewOrder")}
         </button>
       </div>
     </div>

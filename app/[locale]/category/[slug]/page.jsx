@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslations, useLocale } from "next-intl";
 import { db } from "@/firebase/config";
 import { collection, getDocs } from "firebase/firestore";
 import ProductCard from "@/components/global/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Slugify utility (supports English/Arabic)
 const slugify = (text) =>
   text
     ?.toString()
@@ -22,18 +23,21 @@ export default function CategoryPage() {
   const params = useParams();
   const rawSlug = params?.slug ? decodeURIComponent(params.slug) : "";
 
-  const { t, i18n } = useTranslation();
+  // Next-intl hooks
+  const t = useTranslations("single-category");
+  const locale = useLocale();
+
   const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categoryName, setCategoryName] = useState("");
 
-  const locale = mounted ? i18n.language : "en";
   const currencySymbol = locale === "ar" ? "ر.س." : "SR ";
 
   const formatNumber = (number) =>
     new Intl.NumberFormat(locale, { minimumFractionDigits: 2 }).format(number);
 
+  // Helper to localize any {en, ar} or plain string field
   const getLocalizedText = (value) => {
     if (typeof value === "object" && value !== null) {
       return value[locale] || value.en || value.ar || "";
@@ -57,6 +61,7 @@ export default function CategoryPage() {
           ...doc.data(),
         }));
 
+        // Filter by slug (supports en/ar)
         const matchedProducts = allProducts.filter((p) => {
           const cat = p.category;
           if (!cat || typeof cat !== "object") return false;
@@ -87,7 +92,7 @@ export default function CategoryPage() {
 
   if (!mounted) {
     return (
-      <div className='container mx-auto px-4 py-6'>
+      <div className='container mx-auto px-4 py-6 capitalize'>
         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
           {[...Array(8)].map((_, i) => (
             <Skeleton key={i} className='h-48 w-full rounded-md' />
@@ -98,9 +103,9 @@ export default function CategoryPage() {
   }
 
   return (
-    <div className='container mx-auto px-4 py-6'>
+    <div className='container mx-auto px-4 py-6 capitalize'>
       <h2 className='text-center text-2xl font-semibold text-[#2c6449] mb-6'>
-        {categoryName} {t("category.category")}
+        {categoryName} {t("category")}
       </h2>
 
       {loading ? (
@@ -122,9 +127,7 @@ export default function CategoryPage() {
           ))}
         </div>
       ) : (
-        <p className='text-center text-gray-500'>
-          {t("category.noProductsFound")}
-        </p>
+        <p className='text-center text-gray-500'>{t("noProductsFound")}</p>
       )}
     </div>
   );

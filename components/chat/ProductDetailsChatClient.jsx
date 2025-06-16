@@ -8,9 +8,13 @@ import { useRouter } from "next/navigation";
 import ChatMessages from "@/components/chat/ChatMessages";
 import ChatMiniProductSnapshot from "@/components/chat/ChatMiniProductSnapshot";
 import { toast } from "sonner";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function ProductDetailsChatClient({ chatId }) {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("productDetailsChat");
+
   const { user: currentUser, loading: authLoading } = useSelector(
     (s) => s.auth
   );
@@ -29,7 +33,9 @@ export default function ProductDetailsChatClient({ chatId }) {
     getDoc(chatRef)
       .then((snap) => {
         if (!snap.exists()) {
-          setNotification("Chat not found.");
+          setNotification(
+            t("chat_not_found", { defaultMessage: "Chat not found." })
+          );
         } else {
           const data = snap.data();
           setChatMeta(data);
@@ -38,7 +44,9 @@ export default function ProductDetailsChatClient({ chatId }) {
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Could not load chat.");
+        toast.error(
+          t("chat_load_error", { defaultMessage: "Could not load chat." })
+        );
       });
 
     const unsub = onSnapshot(
@@ -52,12 +60,16 @@ export default function ProductDetailsChatClient({ chatId }) {
       },
       (err) => {
         console.error(err);
-        toast.error("Chat connection error.");
+        toast.error(
+          t("chat_connection_error", {
+            defaultMessage: "Chat connection error.",
+          })
+        );
       }
     );
 
     return () => unsub();
-  }, [authLoading, currentUser, chatId]);
+  }, [authLoading, currentUser, chatId, t]);
 
   // Once we have chatMeta, enforce that only buyer or supplier can stay
   useEffect(() => {
@@ -65,7 +77,6 @@ export default function ProductDetailsChatClient({ chatId }) {
 
     const { buyerId, supplierId } = chatMeta;
     if (currentUser.uid !== buyerId && currentUser.uid !== supplierId) {
-      // you can push to a generic “Not Authorized” page, or home
       router.replace("/unauthorized");
     }
   }, [chatMeta, currentUser, router]);
@@ -79,30 +90,44 @@ export default function ProductDetailsChatClient({ chatId }) {
         if (snap.exists()) {
           setMiniProduct(snap.data());
         } else {
-          setNotification("Product snapshot not found.");
+          setNotification(
+            t("product_not_found", {
+              defaultMessage: "Product snapshot not found.",
+            })
+          );
         }
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Could not load product info.");
+        toast.error(
+          t("product_load_error", {
+            defaultMessage: "Could not load product info.",
+          })
+        );
       });
-  }, [chatId]);
+  }, [chatId, t]);
 
   // Show loading until everything is ready
   if (authLoading || !currentUser || !chatMeta || !miniProduct) {
-    return <p className='p-6 text-center text-gray-500'>Loading…</p>;
+    return (
+      <p className='p-6 text-center text-gray-500'>
+        {t("loading", { defaultMessage: "Loading…" })}
+      </p>
+    );
   }
 
   const isBuyer = currentUser.uid === chatMeta.buyerId;
-  const otherLabel = isBuyer ? "Supplier" : "Buyer";
+  const otherLabel = isBuyer
+    ? t("supplier", { defaultMessage: "Supplier" })
+    : t("buyer", { defaultMessage: "Buyer" });
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-3 gap-6 p-6 max-w-6xl mx-auto'>
       <aside className='col-span-1 border rounded p-4 bg-white space-y-4'>
         <h2 className='text-lg font-semibold text-[#2c6449]'>
-          Product Details
+          {t("product_details", { defaultMessage: "Product Details" })}
         </h2>
-        <ChatMiniProductSnapshot data={miniProduct} />
+        <ChatMiniProductSnapshot data={miniProduct} locale={locale} />
       </aside>
 
       <section className='col-span-2 flex flex-col'>
@@ -112,7 +137,8 @@ export default function ProductDetailsChatClient({ chatId }) {
           </div>
         )}
         <h2 className='text-lg font-semibold mb-3 text-[#2c6449]'>
-          Chat with {otherLabel}
+          {t("chat_with", { role: otherLabel, defaultMessage: "Chat with " })}{" "}
+          {otherLabel}
         </h2>
         <div className='h-[480px] pb-2 border rounded-lg overflow-hidden'>
           <ChatMessages chatId={chatId} chatMeta={chatMeta} />

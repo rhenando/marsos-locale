@@ -32,17 +32,42 @@ const GlobalLoading = () => {
   return (
     <div className='fixed inset-0 z-[9999] bg-white flex items-center justify-center'>
       <div className='relative w-32 h-32 flex items-center justify-center'>
-        {/* Rotating Circle */}
-        <div className='absolute w-full h-full border-2 border-gray-200 border-t-[#2c6449] rounded-full animate-slow-spin'></div>
-
-        {/* Logo in Center */}
+        {/* Ultra-thin SVG spinner */}
+        <svg
+          className='animate-spin'
+          width='128'
+          height='128'
+          viewBox='0 0 50 50'
+          style={{ position: "absolute", left: 0, top: 0 }}
+        >
+          <circle
+            cx='25'
+            cy='25'
+            r='20'
+            fill='none'
+            stroke='#e5e7eb'
+            strokeWidth='.7'
+          />
+          <circle
+            cx='25'
+            cy='25'
+            r='20'
+            fill='none'
+            stroke='#2c6449'
+            strokeWidth='.7'
+            strokeLinecap='round'
+            strokeDasharray='100'
+            strokeDashoffset='60'
+          />
+        </svg>
+        {/* Centered Logo */}
         <Image
           src='/logo.png'
           alt='Loading Logo'
-          width={120}
-          height={120}
+          width={70}
+          height={70}
           priority
-          className='object-contain rounded-full fade-in'
+          className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 object-contain rounded-full'
         />
       </div>
     </div>

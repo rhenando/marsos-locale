@@ -10,13 +10,13 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "@/firebase/config";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { Trash2, Pencil, Plus } from "lucide-react";
 
 const ProductCategoriesPage = () => {
-  const { t, i18n } = useTranslation();
+  const t = useTranslations("product_categories");
   // Read auth state from Redux
   const { user, loading: authLoading } = useSelector((state) => state.auth);
 

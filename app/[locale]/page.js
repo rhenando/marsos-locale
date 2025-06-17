@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
       ? {
           title: "مرصوص - منصة مرصوص لخدمات التسويق الصناعي و التحول الرقمي",
           description:
-            "مرصوص – اكتشف أفضل المنتجات الصناعية من المصانع السعودية مباشرة بجودة عالية وأسعار منافسة لقطاع الاعمال.",
+            "مرصوص | اكتشف أفضل المنتجات الصناعية من المصانع السعودية مباشرة بجودة عالية وأسعار منافسة لقطاع الاعمال.",
           keywords:
             "مرصوص, صنع في السعودية, المصانع السعوية, الموردون, منتجات المملكة العربية السعودية, المنتجات السعودية بالجملة, سعر المصنع",
           url: "https://marsos.sa/ar",
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }) {
         }
       : {
           title:
-            "Marsos | Marsos SA for Saudi industrial marketing and Digital transformation",
+            "Marsos | Marsos SA for Saudi Industrial Marketing and Digital Transformation",
           description:
             "Marsos – Discover top Saudi industrial products on Marsos with premium quality and competitive prices from the kingdom of Saudi Arabia.",
           keywords:

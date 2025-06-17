@@ -71,7 +71,8 @@ export default function AdminSidebarLayout({ children }) {
       ])}
 
       <Link
-        href='/admin-dashboard/messages'
+        href='/'
+        // href='/admin-dashboard/messages'
         onClick={() => setOpen(false)}
         className={navLink("/admin-dashboard/messages")}
       >
@@ -81,13 +82,18 @@ export default function AdminSidebarLayout({ children }) {
 
       {/* Marketing */}
       {expandableNav("marketing", BarChart, marketingOpen, setMarketingOpen, [
+        ["/", "seo"],
+      ])}
+
+      {/* Marketing
+      {expandableNav("marketing", BarChart, marketingOpen, setMarketingOpen, [
         ["/admin-dashboard/marketing/seo", "seo"],
         ["/admin-dashboard/marketing/promotion", "promotion"],
         ["/admin-dashboard/marketing/coupons", "couponCode"],
-      ])}
+      ])} */}
 
       <Link
-        href='/admin-dashboard/settings'
+        href='/'
         onClick={() => setOpen(false)}
         className={navLink("/admin-dashboard/settings")}
       >

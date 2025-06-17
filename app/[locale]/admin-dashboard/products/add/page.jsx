@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslations, useLocale } from "next-intl";
 import CreatableSelect from "react-select/creatable";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -20,8 +20,8 @@ import { translateText } from "@/utils/translate";
 
 export default function AdminAddProductPage() {
   const router = useRouter();
-  const { t, i18n } = useTranslation("admin_product_add");
-  const locale = i18n.language;
+  const t = useTranslations("admin_product_add");
+  const locale = useLocale();
 
   const [translatedCategories, setTranslatedCategories] = useState({});
   const [suppliers, setSuppliers] = useState([]);
@@ -442,7 +442,7 @@ export default function AdminAddProductPage() {
           {/* Category */}
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>
-              {t("admin_product_add.category")}
+              {t("category")}
             </label>
             <CreatableSelect
               options={Object.keys(categories).map((cat) => ({

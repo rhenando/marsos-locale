@@ -5,21 +5,18 @@ import React from "react";
 import Link from "next/link";
 import { ChevronDown, Search as SearchIcon, PlusCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 
 export default function SupplierHeader({ supplier }) {
-  const { t } = useTranslation();
-  const [inSite, setInSite] = React.useState(t("supplierHeader.inThisSite"));
+  const t = useTranslations("supplierHeader");
+  const [inSite, setInSite] = React.useState(t("inThisSite"));
   const [query, setQuery] = React.useState("");
-  const sites = [
-    t("supplierHeader.inThisSite"),
-    t("supplierHeader.entireMarketplace"),
-  ];
+  const sites = [t("inThisSite"), t("entireMarketplace")];
 
   if (!supplier) {
     return (
       <header className='bg-white shadow p-4 text-sm text-center'>
-        {t("supplierHeader.loading")}
+        {t("loading")}
       </header>
     );
   }
@@ -27,13 +24,9 @@ export default function SupplierHeader({ supplier }) {
   const logoUrl = supplier.logoUrl || "/logo.png";
   const memberType = Array.isArray(supplier.memberType)
     ? supplier.memberType.join(", ")
-    : supplier.memberType || t("supplierHeader.notSecured");
-  const isAuditedLabel = supplier.isAudited
-    ? t("supplierHeader.audited")
-    : t("supplierHeader.notAudited");
-  const isSecuredLabel = supplier.isSecured
-    ? t("supplierHeader.secured")
-    : t("supplierHeader.notSecured");
+    : supplier.memberType || t("notSecured");
+  const isAuditedLabel = supplier.isAudited ? t("audited") : t("notAudited");
+  const isSecuredLabel = supplier.isSecured ? t("secured") : t("notSecured");
 
   return (
     <header className='bg-white shadow'>
@@ -94,7 +87,7 @@ export default function SupplierHeader({ supplier }) {
             <Input
               name='q'
               type='text'
-              placeholder={t("supplierHeader.searchPlaceholder")}
+              placeholder={t("searchPlaceholder")}
               className='px-3 py-1 focus:outline-none text-xs'
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -110,7 +103,7 @@ export default function SupplierHeader({ supplier }) {
             className='inline-flex items-center border rounded px-3 py-1 hover:bg-gray-50 text-xs'
           >
             <PlusCircle size={14} className='mr-1' />
-            {t("supplierHeader.postSourcingRequest")}
+            {t("postSourcingRequest")}
           </Link>
         </div>
       </div>

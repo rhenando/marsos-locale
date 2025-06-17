@@ -3,24 +3,21 @@
 
 import React from "react";
 import Link from "next/link";
-import { useTranslation } from "react-i18next";
+import { useTranslations, useLocale } from "next-intl";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function SupplierProfile({ supplier }) {
-  const { t, i18n } = useTranslation();
-  const dir = i18n.language.startsWith("ar") ? "rtl" : "ltr";
+  const t = useTranslations("supplierProfile");
+  const locale = useLocale();
+  const dir = locale.startsWith("ar") ? "rtl" : "ltr";
 
   if (!supplier) {
-    return (
-      <div className='p-8 text-center text-sm'>
-        {t("supplierProfile.loading")}
-      </div>
-    );
+    return <div className='p-8 text-center text-sm'>{t("loading")}</div>;
   }
 
   function renderVal(val) {
-    if (val == null) return t("supplierProfile.notSpecified");
+    if (val == null) return t("notSpecified");
     if (Array.isArray(val)) return val.join(", ");
     if (typeof val === "object") return Object.values(val).join(", ");
     return String(val);
@@ -29,21 +26,15 @@ export default function SupplierProfile({ supplier }) {
   const logoUrl = supplier.logoUrl || "/assets/company-intro.jpg";
   const memberType = Array.isArray(supplier.memberType)
     ? supplier.memberType.join(", ")
-    : supplier.memberType || t("supplierProfile.notSpecified");
-  const isAuditedLabel = supplier.isAudited
-    ? t("supplierProfile.audited")
-    : t("supplierProfile.notAudited");
-  const isSecuredLabel = supplier.isSecured
-    ? t("supplierProfile.secured")
-    : t("supplierProfile.notSecured");
+    : supplier.memberType || t("notSpecified");
+  const isAuditedLabel = supplier.isAudited ? t("audited") : t("notAudited");
+  const isSecuredLabel = supplier.isSecured ? t("secured") : t("notSecured");
 
   return (
     <div dir={dir} className='max-w-full mx-auto space-y-8 px-4 py-6'>
       {/* Company Profile Section */}
       <section className='space-y-6 border-t pt-6'>
-        <h2 className='text-xl sm:text-2xl font-bold'>
-          {t("supplierProfile.sections.companyProfile")}
-        </h2>
+        <h2 className='text-xl sm:text-2xl font-bold'>{t("companyProfile")}</h2>
         <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
           {/* Left block */}
           <div className='space-y-4 flex flex-col items-center lg:items-start'>
@@ -63,10 +54,10 @@ export default function SupplierProfile({ supplier }) {
               ))}
             </div>
             <Button variant='outline' className='w-full sm:w-auto text-sm'>
-              {t("supplierProfile.buttons.virtualTour")}
+              {t("virtualTour")}
             </Button>
             <Button variant='outline' className='w-full sm:w-auto text-sm'>
-              {t("supplierProfile.buttons.bookTour")}
+              {t("bookTour")}
             </Button>
           </div>
 
@@ -85,8 +76,7 @@ export default function SupplierProfile({ supplier }) {
                 <li key={key} className='flex items-start'>
                   <Check className='h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-1' />
                   <div className='flex-1'>
-                    <strong>{t(`supplierProfile.fields.${key}`)}:</strong>{" "}
-                    {renderVal(val)}
+                    <strong>{t(`${key}`)}:</strong> {renderVal(val)}
                   </div>
                 </li>
               ))}
@@ -96,9 +86,7 @@ export default function SupplierProfile({ supplier }) {
                 <div className='flex items-start flex-1'>
                   <Check className='h-5 w-5 text-green-500 mr-2 mt-1' />
                   <div>
-                    <strong>
-                      {t("supplierProfile.fields.auditReportNo")}:
-                    </strong>{" "}
+                    <strong>{t("auditReportNo")}:</strong>{" "}
                     <span className='font-semibold'>
                       {renderVal(supplier.auditReportNo)}
                     </span>
@@ -109,14 +97,14 @@ export default function SupplierProfile({ supplier }) {
                     href='#'
                     className='text-blue-600 hover:underline text-sm'
                   >
-                    {t("supplierProfile.links.verify")}
+                    {t("verify")}
                   </Link>
                   <span>|</span>
                   <Link
                     href='#'
                     className='text-blue-600 hover:underline text-sm'
                   >
-                    {t("supplierProfile.links.readReport")}
+                    {t("readReport")}
                   </Link>
                 </div>
               </li>
@@ -125,7 +113,7 @@ export default function SupplierProfile({ supplier }) {
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 text-sm'>
               <div>
                 <p>
-                  <strong>{t("supplierProfile.fields.rating")}:</strong>{" "}
+                  <strong>{t("rating")}:</strong>{" "}
                   <span className='text-lg font-semibold'>
                     {renderVal(supplier.rating)}
                   </span>
@@ -133,9 +121,7 @@ export default function SupplierProfile({ supplier }) {
               </div>
               <div>
                 <p>
-                  <strong>
-                    {t("supplierProfile.fields.averageResponseTime")}:
-                  </strong>{" "}
+                  <strong>{t("averageResponseTime")}:</strong>{" "}
                   {renderVal(supplier.averageResponseTime)}
                 </p>
               </div>
@@ -146,7 +132,7 @@ export default function SupplierProfile({ supplier }) {
             </p>
 
             <Link href='#' className='text-blue-600 hover:underline text-sm'>
-              {t("supplierProfile.viewAll")}
+              {t("viewAll")}
             </Link>
           </div>
         </div>
@@ -155,12 +141,12 @@ export default function SupplierProfile({ supplier }) {
       {/* General Information Section */}
       <section className='border p-4 sm:p-6 rounded-lg bg-white'>
         <h3 className='text-lg sm:text-xl font-semibold mb-4'>
-          {t("supplierProfile.sections.generalInfo")}
+          {t("generalInfo")}
         </h3>
         <div className='flex flex-col sm:flex-row justify-between items-center text-sm text-gray-700 mb-4'>
           <div className='flex items-center space-x-1'>
             <span>
-              {t("supplierProfile.verifiedCount", {
+              {t("verifiedCount", {
                 count: supplier.verifiedItems || 0,
               })}
             </span>
@@ -185,8 +171,7 @@ export default function SupplierProfile({ supplier }) {
                 }`}
               />
               <div>
-                <strong>{t(`supplierProfile.fields.${key}`)}:</strong>{" "}
-                {renderVal(supplier[key])}
+                <strong>{t(`${key}`)}:</strong> {renderVal(supplier[key])}
               </div>
             </li>
           ))}

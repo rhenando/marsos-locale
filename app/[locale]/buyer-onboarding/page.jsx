@@ -6,21 +6,18 @@ import { useRouter } from "next/navigation";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
+import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 
-const STEPS = [
-  "onboarding.steps.authNun",
-  "onboarding.steps.verifyDate",
-  "onboarding.steps.completeDetails",
-];
+const STEPS = ["authNun", "verifyDate", "completeDetails"];
 
 const PHONE_CODES = ["+966", "+971", "+973", "+965", "+968", "+974", "+63"];
 
 export default function BuyerOnboardingPage() {
   const router = useRouter();
-  const { t, i18n } = useTranslation("common");
-  const isRtl = i18n.dir() === "rtl";
+  const t = useTranslations("admin-onboarding");
+  const locale = useLocale();
+  const isRtl = locale === "ar";
 
   // Progress
   const [step, setStep] = useState(0);
@@ -77,15 +74,15 @@ export default function BuyerOnboardingPage() {
 
   const authenticateNun = async () => {
     if (!nun) {
-      toast.error(t("onboarding.errors.nunRequired"));
+      toast.error(t("nunRequired"));
       return;
     }
     setLoading(true);
     try {
-      toast.success(t("onboarding.messages.authSuccess"));
+      toast.success(t("authSuccess"));
       setStep(1);
     } catch {
-      toast.error(t("onboarding.errors.authFailed"));
+      toast.error(t("authFailed"));
     } finally {
       setLoading(false);
     }
@@ -93,15 +90,15 @@ export default function BuyerOnboardingPage() {
 
   const verifyIssueDate = async () => {
     if (!issueDate) {
-      toast.error(t("onboarding.errors.dateRequired"));
+      toast.error(t("dateRequired"));
       return;
     }
     setLoading(true);
     try {
-      toast.success(t("onboarding.messages.dateVerified"));
+      toast.success(t("dateVerified"));
       setStep(2);
     } catch {
-      toast.error(t("onboarding.errors.dateFailed"));
+      toast.error(t("dateFailed"));
     } finally {
       setLoading(false);
     }
@@ -130,7 +127,7 @@ export default function BuyerOnboardingPage() {
       !designation ||
       !personalIdNumber
     ) {
-      toast.error(t("onboarding.errors.completeAllFields"));
+      toast.error(t("completeAllFields"));
       return;
     }
 
@@ -164,11 +161,11 @@ export default function BuyerOnboardingPage() {
         approved: false,
         createdAt: serverTimestamp(),
       });
-      toast.success(t("onboarding.messages.submitted"));
+      toast.success(t("submitted"));
       router.push("/pending");
     } catch (err) {
       console.error(err);
-      toast.error(t("onboarding.errors.submitFailed"));
+      toast.error(t("submitFailed"));
     } finally {
       setLoading(false);
     }
@@ -180,12 +177,12 @@ export default function BuyerOnboardingPage() {
         return (
           <>
             <label className='block text-sm font-medium text-gray-700'>
-              {t("onboarding.labels.nun")} *
+              {t("nun")} *
             </label>
             <input
               value={nun}
               onChange={(e) => setNun(e.target.value)}
-              placeholder={t("onboarding.placeholders.nun")}
+              placeholder={t("nun")}
               className='mt-1 w-full p-2 border rounded'
             />
             <button
@@ -193,9 +190,7 @@ export default function BuyerOnboardingPage() {
               disabled={loading}
               className='mt-6 w-full bg-primary text-white py-2 rounded'
             >
-              {loading
-                ? t("onboarding.buttons.authenticating")
-                : t("onboarding.buttons.authenticate")}
+              {loading ? t("authenticating") : t("authenticate")}
             </button>
           </>
         );
@@ -212,7 +207,7 @@ export default function BuyerOnboardingPage() {
                   onChange={() => setDateType("hijri")}
                   className='h-4 w-4 text-primary border-gray-300'
                 />
-                <span>{t("onboarding.labels.hijri")}</span>
+                <span>{t("hijri")}</span>
               </label>
               <label className='inline-flex items-center space-x-2'>
                 <input
@@ -223,12 +218,12 @@ export default function BuyerOnboardingPage() {
                   onChange={() => setDateType("gregorian")}
                   className='h-4 w-4 text-primary border-gray-300'
                 />
-                <span>{t("onboarding.labels.gregorian")}</span>
+                <span>{t("gregorian")}</span>
               </label>
             </div>
             <div className='mt-4'>
               <label className='block text-sm font-medium text-gray-700'>
-                {t("onboarding.labels.issueDate")} *
+                {t("issueDate")} *
               </label>
               <input
                 type='date'
@@ -242,9 +237,7 @@ export default function BuyerOnboardingPage() {
               disabled={loading}
               className='mt-6 w-full bg-primary text-white py-2 rounded'
             >
-              {loading
-                ? t("onboarding.buttons.verifyingDate")
-                : t("onboarding.buttons.verify")}
+              {loading ? t("verifyingDate") : t("verify")}
             </button>
           </>
         );
@@ -256,42 +249,36 @@ export default function BuyerOnboardingPage() {
           >
             <fieldset className='space-y-3'>
               <legend className='text-base sm:text-lg font-semibold text-[#2c6449] mb-2'>
-                {t("onboarding.legends.companyDetails")}
+                {t("companyDetails")}
               </legend>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.companyName")}
-                </label>
+                <label className='block mb-1'>{t("companyName")}</label>
                 <input
                   name='companyName'
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.companyName")}
+                  placeholder={t("companyName")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.companyEmail")}
-                </label>
+                <label className='block mb-1'>{t("companyEmail")}</label>
                 <input
                   type='email'
                   name='companyEmail'
                   value={companyEmail}
                   onChange={(e) => setCompanyEmail(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.companyEmail")}
+                  placeholder={t("companyEmail")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.nun")}
-                </label>
+                <label className='block mb-1'>{t("nun")}</label>
                 <input
                   name='nun'
                   value={nun}
@@ -301,24 +288,20 @@ export default function BuyerOnboardingPage() {
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.commercialReg")}
-                </label>
+                <label className='block mb-1'>{t("commercialReg")}</label>
                 <input
                   name='commercialReg'
                   value={commercialReg}
                   onChange={(e) => setCommercialReg(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.commercialReg")}
+                  placeholder={t("commercialReg")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div className='grid grid-cols-2 gap-2'>
                 <div>
-                  <label className='block mb-1'>
-                    {t("onboarding.labels.crIssueG")}
-                  </label>
+                  <label className='block mb-1'>{t("crIssueG")}</label>
                   <input
                     type='date'
                     name='crIssueG'
@@ -329,9 +312,7 @@ export default function BuyerOnboardingPage() {
                   />
                 </div>
                 <div>
-                  <label className='block mb-1'>
-                    {t("onboarding.labels.crIssueH")}
-                  </label>
+                  <label className='block mb-1'>{t("crIssueH")}</label>
                   <input
                     type='date'
                     name='crIssueH'
@@ -345,9 +326,7 @@ export default function BuyerOnboardingPage() {
 
               <div className='grid grid-cols-2 gap-2'>
                 <div>
-                  <label className='block mb-1'>
-                    {t("onboarding.labels.crConfirmG")}
-                  </label>
+                  <label className='block mb-1'>{t("crConfirmG")}</label>
                   <input
                     type='date'
                     name='crConfirmG'
@@ -358,9 +337,7 @@ export default function BuyerOnboardingPage() {
                   />
                 </div>
                 <div>
-                  <label className='block mb-1'>
-                    {t("onboarding.labels.crConfirmH")}
-                  </label>
+                  <label className='block mb-1'>{t("crConfirmH")}</label>
                   <input
                     type='date'
                     name='crConfirmH'
@@ -373,23 +350,19 @@ export default function BuyerOnboardingPage() {
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.vatRegNumber")}
-                </label>
+                <label className='block mb-1'>{t("vatRegNumber")}</label>
                 <input
                   name='vatRegNumber'
                   value={vatRegNumber}
                   onChange={(e) => setVatRegNumber(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.vatRegNumber")}
+                  placeholder={t("vatRegNumber")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.companyPhone")}
-                </label>
+                <label className='block mb-1'>{t("companyPhone")}</label>
                 <div className='flex'>
                   <select
                     value={companyPhoneCode}
@@ -408,65 +381,57 @@ export default function BuyerOnboardingPage() {
                     value={companyPhone}
                     onChange={(e) => setCompanyPhone(e.target.value)}
                     required
-                    placeholder={t("onboarding.placeholders.companyPhone")}
+                    placeholder={t("companyPhone")}
                     className='flex-1 p-1 border rounded-r text-sm'
                   />
                 </div>
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.city")}
-                </label>
+                <label className='block mb-1'>{t("city")}</label>
                 <input
                   name='city'
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.city")}
+                  placeholder={t("city")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.zipCode")}
-                </label>
+                <label className='block mb-1'>{t("zipCode")}</label>
                 <input
                   name='zipCode'
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.zipCode")}
+                  placeholder={t("zipCode")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.country")}
-                </label>
+                <label className='block mb-1'>{t("country")}</label>
                 <input
                   name='country'
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.country")}
+                  placeholder={t("country")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.address")}
-                </label>
+                <label className='block mb-1'>{t("address")}</label>
                 <textarea
                   name='address'
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required
                   rows={3}
-                  placeholder={t("onboarding.placeholders.address")}
+                  placeholder={t("address")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
@@ -474,26 +439,24 @@ export default function BuyerOnboardingPage() {
 
             <fieldset className='space-y-3'>
               <legend className='text-base sm:text-lg font-semibold text-[#2c6449] mb-2'>
-                {t("onboarding.legends.authorizedPerson")}
+                {t("authorizedPerson")}
               </legend>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.authPersonName")}
-                </label>
+                <label className='block mb-1'>{t("authPersonName")}</label>
                 <input
                   name='authPersonName'
                   value={authPersonName}
                   onChange={(e) => setAuthPersonName(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.authPersonName")}
+                  placeholder={t("authPersonName")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div className='bg-yellow-50 p-2 rounded'>
                 <label className='block mb-1 font-medium text-[#2c6449]'>
-                  {t("onboarding.labels.authPersonEmail")}
+                  {t("authPersonEmail")}
                 </label>
                 <input
                   type='email'
@@ -501,14 +464,14 @@ export default function BuyerOnboardingPage() {
                   value={authPersonEmail}
                   onChange={(e) => setAuthPersonEmail(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.authPersonEmail")}
+                  placeholder={t("authPersonEmail")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div className='bg-yellow-50 p-2 rounded'>
                 <label className='block mb-1 font-medium text-[#2c6449]'>
-                  {t("onboarding.labels.authPassword")}
+                  {t("authPassword")}
                 </label>
                 <input
                   type='password'
@@ -516,14 +479,14 @@ export default function BuyerOnboardingPage() {
                   value={authPassword}
                   onChange={(e) => setAuthPassword(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.authPassword")}
+                  placeholder={t("authPassword")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div className='bg-yellow-50 p-2 rounded'>
                 <label className='block mb-1 font-medium text-[#2c6449]'>
-                  {t("onboarding.labels.authPhone")}
+                  {t("authPhone")}
                 </label>
                 <div className='flex'>
                   <select
@@ -543,36 +506,32 @@ export default function BuyerOnboardingPage() {
                     value={authPersonMobile}
                     onChange={(e) => setAuthPersonMobile(e.target.value)}
                     required
-                    placeholder={t("onboarding.placeholders.authPersonMobile")}
+                    placeholder={t("authPersonMobile")}
                     className='flex-1 p-1 border rounded-r text-sm'
                   />
                 </div>
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.designation")}
-                </label>
+                <label className='block mb-1'>{t("designation")}</label>
                 <input
                   name='designation'
                   value={designation}
                   onChange={(e) => setDesignation(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.designation")}
+                  placeholder={t("designation")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
 
               <div>
-                <label className='block mb-1'>
-                  {t("onboarding.labels.personalIdNumber")}
-                </label>
+                <label className='block mb-1'>{t("personalIdNumber")}</label>
                 <input
                   name='personalIdNumber'
                   value={personalIdNumber}
                   onChange={(e) => setPersonalIdNumber(e.target.value)}
                   required
-                  placeholder={t("onboarding.placeholders.personalIdNumber")}
+                  placeholder={t("personalIdNumber")}
                   className='w-full p-1 border rounded text-sm'
                 />
               </div>
@@ -583,9 +542,7 @@ export default function BuyerOnboardingPage() {
               disabled={loading}
               className='bg-[#2c6449] text-white text-sm py-2 rounded md:col-span-2'
             >
-              {loading
-                ? t("onboarding.buttons.uploading")
-                : t("onboarding.buttons.submit")}
+              {loading ? t("uploading") : t("submit")}
             </button>
           </form>
         );
@@ -602,7 +559,7 @@ export default function BuyerOnboardingPage() {
       <Card className='w-full max-w-md sm:max-w-2xl bg-white shadow-lg rounded-lg h-full'>
         <CardContent className='px-4 sm:px-6 md:px-8 py-10 flex flex-col h-full'>
           <h1 className='text-2xl font-bold text-gray-900 text-center mb-6'>
-            {t("onboarding.welcome.title")}
+            {t("title")}
           </h1>
           {/* Step Indicator */}
           <div className='flex flex-wrap justify-center mb-8 gap-4 text-xs sm:text-sm'>

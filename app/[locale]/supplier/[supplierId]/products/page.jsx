@@ -1,9 +1,8 @@
-// app/supplier/[supplierId]/products/page.jsx
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslations, useLocale } from "next-intl";
 import { db } from "@/firebase/config";
 import {
   doc,
@@ -23,10 +22,19 @@ import ProductCard from "@/components/global/ProductCard";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 
+// Helper: always return a localized string from string or object
+function getLocalized(val, locale, fallback = "") {
+  if (!val) return fallback;
+  if (typeof val === "object")
+    return val[locale] || Object.values(val)[0] || fallback;
+  return val;
+}
+
 export default function SupplierProductsPage() {
   const { supplierId } = useParams();
-  const { t, i18n } = useTranslation();
-  const currentLang = i18n.language.startsWith("ar") ? "ar" : "en";
+  const t = useTranslations("supplierProductsPage");
+  const locale = useLocale();
+  const currentLang = locale.startsWith("ar") ? "ar" : "en";
 
   const [sliderRef] = useKeenSlider({ loop: true, slides: { perView: 1 } });
   const [supplierData, setSupplierData] = useState(null);
@@ -56,19 +64,23 @@ export default function SupplierProductsPage() {
       const snap = await getDocs(q);
       const prods = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       setProductData(prods);
-      setCategories([
-        t("supplierProductsPage.products.all"),
-        ...new Set(
-          prods.map(
-            (p) =>
-              p.category || t("supplierProductsPage.products.uncategorized")
+
+      // Normalize all categories to localized string for uniqueness
+      const categoryNames = [
+        t("all"),
+        ...Array.from(
+          new Set(
+            prods.map((p) =>
+              getLocalized(p.category, locale, t("uncategorized"))
+            )
           )
         ),
-      ]);
+      ];
+      setCategories(categoryNames);
     })();
-  }, [supplierId, t]);
+  }, [supplierId, t, locale]);
 
-  // Localize fields
+  // Localize supplier fields
   const localizedSupplier = useMemo(() => {
     if (!supplierData) return null;
     const result = { ...supplierData };
@@ -86,7 +98,7 @@ export default function SupplierProductsPage() {
   if (supplierData === null || !localizedSupplier) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        {t("supplierProductsPage.common.loading")}
+        {t("loading")}
       </div>
     );
   }
@@ -98,14 +110,16 @@ export default function SupplierProductsPage() {
       : [supplierData.logoUrl || "/logo.png"];
 
   const filtered = productData.filter((p) => {
-    let name =
+    let name = getLocalized(
+      p.productName,
+      currentLang,
       typeof p.productName === "string"
         ? p.productName
-        : p.productName?.[currentLang] ||
-          Object.values(p.productName || {})[0] ||
-          "";
+        : Object.values(p.productName || {})[0] || ""
+    );
     return name.toLowerCase().includes(searchQuery.trim().toLowerCase());
   });
+
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginated = filtered.slice(
     (currentPage - 1) * itemsPerPage,
@@ -119,10 +133,10 @@ export default function SupplierProductsPage() {
       <Tabs defaultValue='products' className='space-y-4'>
         <TabsList className='flex flex-col sm:flex-row'>
           <TabsTrigger value='products' className='flex-1 text-center'>
-            {t("supplierProductsPage.tabs.products")}
+            {t("products")}
           </TabsTrigger>
           <TabsTrigger value='profile' className='flex-1 text-center'>
-            {t("supplierProductsPage.tabs.profile")}
+            {t("profile")}
           </TabsTrigger>
         </TabsList>
 
@@ -150,23 +164,27 @@ export default function SupplierProductsPage() {
             <aside className='hidden lg:block space-y-6'>
               <Card>
                 <CardHeader>
-                  <CardTitle>
-                    {t("supplierProductsPage.sidebar.productGroups")}
-                  </CardTitle>
+                  <CardTitle>{t("productGroups")}</CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-2'>
-                  {categories.map((cat) => (
+                  {categories.map((cat, idx) => (
                     <a
-                      key={cat}
+                      key={cat + "-" + idx}
                       href='#'
                       className='flex justify-between hover:text-[#2c6449]'
                     >
                       <span>{cat}</span>
                       <span className='text-gray-500'>
-                        {cat === t("supplierProductsPage.products.all")
+                        {cat === t("all")
                           ? productData.length
-                          : productData.filter((p) => p.category === cat)
-                              .length}
+                          : productData.filter(
+                              (p) =>
+                                getLocalized(
+                                  p.category,
+                                  locale,
+                                  t("uncategorized")
+                                ) === cat
+                            ).length}
                       </span>
                     </a>
                   ))}
@@ -174,25 +192,19 @@ export default function SupplierProductsPage() {
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle>
-                    {t("supplierProductsPage.sidebar.contactSupplier")}
-                  </CardTitle>
+                  <CardTitle>{t("contactSupplier")}</CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-2'>
                   <p className='text-sm'>{localizedSupplier.companyName}</p>
                   <Button className='w-full' size='sm' variant='outline'>
-                    {t("supplierProductsPage.sidebar.chat")}
+                    {t("chat")}
                   </Button>
                   <Input
                     as='textarea'
-                    placeholder={t(
-                      "supplierProductsPage.sidebar.messagePlaceholder"
-                    )}
+                    placeholder={t("messagePlaceholder")}
                     className='h-24 resize-none'
                   />
-                  <Button className='w-full'>
-                    {t("supplierProductsPage.sidebar.send")}
-                  </Button>
+                  <Button className='w-full'>{t("send")}</Button>
                 </CardContent>
               </Card>
             </aside>
@@ -202,7 +214,7 @@ export default function SupplierProductsPage() {
               <div className='flex justify-center sm:justify-start mb-4'>
                 <Input
                   type='text'
-                  placeholder={t("supplierProductsPage.search.placeholder")}
+                  placeholder={t("placeholder")}
                   className='w-full sm:w-72'
                   value={searchQuery}
                   onChange={(e) => {
@@ -216,7 +228,7 @@ export default function SupplierProductsPage() {
                   <div key={prod.id} className='relative'>
                     {prod.hasVideo && (
                       <span className='absolute top-2 left-2 bg-black text-white text-xs px-2 py-0.5 rounded'>
-                        {t("supplierProductsPage.products.video")}
+                        {t("video")}
                       </span>
                     )}
                     <ProductCard
@@ -233,10 +245,10 @@ export default function SupplierProductsPage() {
                   onClick={() => setCurrentPage((c) => Math.max(1, c - 1))}
                   disabled={currentPage === 1}
                 >
-                  {t("supplierProductsPage.pagination.previous")}
+                  {t("previous")}
                 </Button>
                 <span className='text-sm'>
-                  {t("supplierProductsPage.pagination.pageInfo", {
+                  {t("pageInfo", {
                     current: currentPage,
                     total: totalPages,
                   })}
@@ -248,7 +260,7 @@ export default function SupplierProductsPage() {
                   }
                   disabled={currentPage === totalPages}
                 >
-                  {t("supplierProductsPage.pagination.next")}
+                  {t("next")}
                 </Button>
               </div>
             </main>

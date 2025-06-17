@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   collection,
@@ -16,16 +15,28 @@ import { db } from "@/firebase/config";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { CreatableSelect } from "@/components/ui/creatable-select";
+import CreatableSelect from "react-select/creatable";
 import {
   defaultLocationOptions,
   defaultSizeOptions,
   defaultColorOptions,
   defaultQuantityOptions,
 } from "@/lib/productOptions";
+import { useTranslations, useLocale } from "next-intl";
+
+// --- Helper: Always get a localized string from a value or object ---
+function getLocalized(val, locale) {
+  if (!val) return "";
+  if (typeof val === "object")
+    return val[locale] || Object.values(val)[0] || "";
+  return val;
+}
 
 export default function UploadProductForm() {
-  const { id } = useParams(); // get the product ID from URL
+  const t = useTranslations("productEdit");
+  const locale = useLocale();
+  const { id } = useParams();
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -35,117 +46,46 @@ export default function UploadProductForm() {
   const [nameAr, setNameAr] = useState("");
   const [descAr, setDescAr] = useState("");
 
-  // Details
-  // 1) All category options
+  // Select Data
   const [categoryOptions, setCategoryOptions] = useState([]);
-  // 2) Map of sub-options per category
   const [subCategoryMap, setSubCategoryMap] = useState({});
-  // 3) Which category/subcategory is selected
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
-
   const [mainLocation, setMainLocation] = useState(null);
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
 
-  // after: const [colors, setColors] = useState([]);
   const [mainImageUrl, setMainImageUrl] = useState("");
   const [additionalImageUrls, setAdditionalImageUrls] = useState([]);
-
-  // After your other state hooks:
   const [priceTiers, setPriceTiers] = useState([]);
 
-  // Add a new empty tier
-  const addTier = () => {
-    setPriceTiers((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        minQty: null,
-        maxQty: null,
-        price: null,
-        deliveryLocations: [],
-      },
-    ]);
-  };
+  // Helper to make options
+  const makeSelectOption = (v) => ({
+    label: getLocalized(v, locale),
+    value: getLocalized(v, locale),
+    raw: v,
+  });
 
-  // Remove a tier by id
-  const removeTier = (tierId) => {
-    setPriceTiers((prev) => prev.filter((t) => t.id !== tierId));
-  };
-
-  // Update a field on a tier
-  const updateTier = (tierId, field, value) => {
-    setPriceTiers((prev) =>
-      prev.map((t) => (t.id === tierId ? { ...t, [field]: value } : t))
-    );
-  };
-
-  // Add a delivery location to a tier
-  const addLocation = (tierId) => {
-    setPriceTiers((prev) =>
-      prev.map((t) =>
-        t.id === tierId
-          ? {
-              ...t,
-              deliveryLocations: [
-                ...t.deliveryLocations,
-                { id: Date.now(), location: null, price: null },
-              ],
-            }
-          : t
-      )
-    );
-  };
-
-  // Remove a location from a tier
-  const removeLocation = (tierId, locId) => {
-    setPriceTiers((prev) =>
-      prev.map((t) =>
-        t.id === tierId
-          ? {
-              ...t,
-              deliveryLocations: t.deliveryLocations.filter(
-                (l) => l.id !== locId
-              ),
-            }
-          : t
-      )
-    );
-  };
-
-  // Update a field on a location
-  const updateLocation = (tierId, locId, field, value) => {
-    setPriceTiers((prev) =>
-      prev.map((t) =>
-        t.id === tierId
-          ? {
-              ...t,
-              deliveryLocations: t.deliveryLocations.map((l) =>
-                l.id === locId ? { ...l, [field]: value } : l
-              ),
-            }
-          : t
-      )
-    );
-  };
-
+  // Fetch categories/subcategories as string options (always locale-safe)
   useEffect(() => {
-    // grab every product, collect distinct category & subCategory
     const fetchCategories = async () => {
       const snap = await getDocs(collection(db, "products"));
       const map = {};
       snap.forEach((docSnap) => {
         const { category, subCategory } = docSnap.data();
-        if (!category) return;
-        if (!map[category]) map[category] = new Set();
-        if (subCategory) map[category].add(subCategory);
+        const cat = getLocalized(category, locale);
+        if (!cat) return;
+        if (!map[cat]) map[cat] = new Set();
+        if (subCategory) map[cat].add(getLocalized(subCategory, locale));
       });
 
-      // build arrays for your select options
       setCategoryOptions(
-        Object.keys(map).map((cat) => ({ label: cat, value: cat }))
+        Object.keys(map).map((cat) => ({
+          label: cat,
+          value: cat,
+        }))
       );
+
       const subMap = {};
       for (const cat in map) {
         subMap[cat] = [...map[cat]].map((sub) => ({
@@ -155,10 +95,10 @@ export default function UploadProductForm() {
       }
       setSubCategoryMap(subMap);
     };
-
     fetchCategories();
-  }, []);
+  }, [locale]);
 
+  // Fetch product for edit
   useEffect(() => {
     if (!id) return;
     const fetchProduct = async () => {
@@ -166,94 +106,83 @@ export default function UploadProductForm() {
       if (!snap.exists()) return;
       const data = snap.data();
 
-      // Basic Info
       setNameEn(data.productName?.en || "");
       setDescEn(data.description?.en || "");
       setNameAr(data.productName?.ar || "");
       setDescAr(data.description?.ar || "");
 
-      // Details
       setSelectedCategory(
-        data.category ? { label: data.category, value: data.category } : null
+        data.category ? makeSelectOption(data.category) : null
       );
       setSelectedSubCategory(
-        data.subCategory
-          ? { label: data.subCategory, value: data.subCategory }
-          : null
+        data.subCategory ? makeSelectOption(data.subCategory) : null
       );
       setMainLocation(
-        data.mainLocation
-          ? { label: data.mainLocation, value: data.mainLocation }
-          : null
+        data.mainLocation ? makeSelectOption(data.mainLocation) : null
       );
       setSizes(
-        Array.isArray(data.sizes)
-          ? data.sizes.map((s) => ({ label: s, value: s }))
-          : []
+        Array.isArray(data.sizes) ? data.sizes.map(makeSelectOption) : []
       );
       setColors(
-        Array.isArray(data.colors)
-          ? data.colors.map((c) => ({ label: c, value: c }))
-          : []
+        Array.isArray(data.colors) ? data.colors.map(makeSelectOption) : []
       );
-
       setMainImageUrl(data.mainImageUrl || "");
       setAdditionalImageUrls(data.additionalImageUrls || []);
 
-      // Firestore stores priceRanges like:
-      // [
-      //   { minQty: "1", maxQty: "10", price: "100", locations: [{ location: "Riyadh", locationPrice: "120" }, …] },
-      //   …
-      /// ]
+      // Parse priceTiers to use only string select values
       const fetched = data.priceRanges || [];
-      // Map into the shape your UI wants:
-      // - give each tier & location a unique id
-      // - convert strings into option objects where needed
-      const mapped = fetched.map((r, tierIdx) => ({
-        id: tierIdx,
-        minQty:
-          defaultQuantityOptions.find((o) => o.value === r.minQty) || null,
-        maxQty:
-          defaultQuantityOptions.find((o) => o.value === r.maxQty) || null,
-        price: defaultQuantityOptions.find((o) => o.value === r.price) || null,
-        deliveryLocations: (r.locations || []).map((loc, locIdx) => ({
-          id: locIdx,
-          location: defaultLocationOptions.find(
-            (o) => o.value === loc.location
-          ) || { label: loc.location, value: loc.location },
+      setPriceTiers(
+        fetched.map((r, tierIdx) => ({
+          id: tierIdx,
+          minQty: defaultQuantityOptions.find(
+            (o) => o.value === String(r.minQty)
+          ) || { label: String(r.minQty), value: String(r.minQty) },
+          maxQty: defaultQuantityOptions.find(
+            (o) => o.value === String(r.maxQty)
+          ) || { label: String(r.maxQty), value: String(r.maxQty) },
           price: defaultQuantityOptions.find(
-            (o) => o.value === loc.locationPrice.toString()
-          ) || {
-            label: loc.locationPrice.toString(),
-            value: loc.locationPrice.toString(),
-          },
-        })),
-      }));
-      setPriceTiers(mapped);
-
+            (o) => o.value === String(r.price)
+          ) || { label: String(r.price), value: String(r.price) },
+          deliveryLocations: (r.locations || []).map((loc, locIdx) => ({
+            id: locIdx,
+            location: defaultLocationOptions.find(
+              (o) => o.value === getLocalized(loc.location, locale)
+            ) || {
+              label: getLocalized(loc.location, locale),
+              value: getLocalized(loc.location, locale),
+            },
+            price: defaultQuantityOptions.find(
+              (o) => o.value === String(loc.locationPrice)
+            ) || {
+              label: String(loc.locationPrice),
+              value: String(loc.locationPrice),
+            },
+          })),
+        }))
+      );
       setLoading(false);
     };
     fetchProduct();
-  }, [id]);
+  }, [id, locale]);
 
   if (loading) {
-    return <p className='p-6 text-center'>Loading product…</p>;
+    return <p className='p-6 text-center'>{t("loading")}</p>;
   }
 
+  // --- Handlers ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    toast.loading("Saving…", { id: "save" });
+    toast.loading(t("saving"), { id: "save" });
 
-    // Build the payload
     const updated = {
       productName: { en: nameEn, ar: nameAr },
       description: { en: descEn, ar: descAr },
-      category: selectedCategory?.value || "",
-      subCategory: selectedSubCategory?.value || "",
-      mainLocation: mainLocation?.value || "",
-      sizes: sizes.map((o) => o.value),
-      colors: colors.map((o) => o.value),
+      category: selectedCategory?.raw || selectedCategory?.value || "",
+      subCategory: selectedSubCategory?.raw || selectedSubCategory?.value || "",
+      mainLocation: mainLocation?.raw || mainLocation?.value || "",
+      sizes: sizes.map((o) => o.raw || o.value),
+      colors: colors.map((o) => o.raw || o.value),
       mainImageUrl,
       additionalImageUrls,
       priceRanges: priceTiers.map((tier) => ({
@@ -270,14 +199,85 @@ export default function UploadProductForm() {
 
     try {
       await updateDoc(doc(db, "products", id), updated);
-      toast.success("Changes Saved!", { id: "save" });
+      toast.success(t("saveSuccess"), { id: "save" });
       setSaving(false);
     } catch (err) {
-      toast.error("Failed to save. Please try again.", { id: "save" });
+      toast.error(t("saveError"), { id: "save" });
       setSaving(false);
     }
   };
 
+  // PriceTier helpers
+  const addTier = () => {
+    setPriceTiers((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        minQty: null,
+        maxQty: null,
+        price: null,
+        deliveryLocations: [],
+      },
+    ]);
+  };
+
+  const removeTier = (tierId) => {
+    setPriceTiers((prev) => prev.filter((t) => t.id !== tierId));
+  };
+
+  const updateTier = (tierId, field, value) => {
+    setPriceTiers((prev) =>
+      prev.map((t) => (t.id === tierId ? { ...t, [field]: value } : t))
+    );
+  };
+
+  const addLocation = (tierId) => {
+    setPriceTiers((prev) =>
+      prev.map((t) =>
+        t.id === tierId
+          ? {
+              ...t,
+              deliveryLocations: [
+                ...t.deliveryLocations,
+                { id: Date.now(), location: null, price: null },
+              ],
+            }
+          : t
+      )
+    );
+  };
+
+  const removeLocation = (tierId, locId) => {
+    setPriceTiers((prev) =>
+      prev.map((t) =>
+        t.id === tierId
+          ? {
+              ...t,
+              deliveryLocations: t.deliveryLocations.filter(
+                (l) => l.id !== locId
+              ),
+            }
+          : t
+      )
+    );
+  };
+
+  const updateLocation = (tierId, locId, field, value) => {
+    setPriceTiers((prev) =>
+      prev.map((t) =>
+        t.id === tierId
+          ? {
+              ...t,
+              deliveryLocations: t.deliveryLocations.map((l) =>
+                l.id === locId ? { ...l, [field]: value } : l
+              ),
+            }
+          : t
+      )
+    );
+  };
+
+  // ----- Render -----
   return (
     <form
       onSubmit={handleSubmit}
@@ -285,33 +285,58 @@ export default function UploadProductForm() {
     >
       {/* Basic Info */}
       <div className='space-y-4'>
-        <h2 className='text-lg md:text-xl font-semibold'>Basic Info</h2>
+        <h2 className='text-lg md:text-xl font-semibold'>{t("basicInfo")}</h2>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <Input value={nameEn} onChange={(e) => setNameEn(e.target.value)} />
-          <Input value={descEn} onChange={(e) => setDescEn(e.target.value)} />
-          <Input value={nameAr} onChange={(e) => setNameAr(e.target.value)} />
-          <Input value={descAr} onChange={(e) => setDescAr(e.target.value)} />
+          <Input
+            value={nameEn}
+            onChange={(e) => setNameEn(e.target.value)}
+            placeholder='Product Name (English)'
+          />
+          <Input
+            value={descEn}
+            onChange={(e) => setDescEn(e.target.value)}
+            placeholder='Product Description (English)'
+          />
+          <Input
+            value={nameAr}
+            onChange={(e) => setNameAr(e.target.value)}
+            placeholder='اسم المنتج (عربي)'
+            dir='rtl'
+          />
+          <Input
+            value={descAr}
+            onChange={(e) => setDescAr(e.target.value)}
+            placeholder='وصف المنتج (عربي)'
+            dir='rtl'
+          />
         </div>
       </div>
 
       {/* Product Details */}
       <div className='space-y-4'>
-        <h2 className='text-lg md:text-xl font-semibold'>Product Details</h2>
+        <h2 className='text-lg md:text-xl font-semibold'>
+          {t("productDetails")}
+        </h2>
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
           {/* Category */}
           <CreatableSelect
-            placeholder='Select or Create a Category'
+            placeholder={t("categoryPlaceholder")}
             options={categoryOptions}
             value={selectedCategory}
             onChange={(opt) => {
               setSelectedCategory(opt);
-              setSelectedSubCategory(null); // clear sub-category whenever category changes
+              setSelectedSubCategory(null);
+            }}
+            onCreateOption={(input) => {
+              const opt = { label: input, value: input };
+              setCategoryOptions((prev) => [...prev, opt]);
+              setSelectedCategory(opt);
             }}
           />
 
           {/* Sub-category */}
           <CreatableSelect
-            placeholder='Select or Create a Subcategory'
+            placeholder={t("subCategoryPlaceholder")}
             options={
               selectedCategory
                 ? subCategoryMap[selectedCategory.value] || []
@@ -320,39 +345,68 @@ export default function UploadProductForm() {
             value={selectedSubCategory}
             onChange={setSelectedSubCategory}
             isDisabled={!selectedCategory}
+            onCreateOption={(input) => {
+              const opt = { label: input, value: input };
+              setSubCategoryMap((prev) => ({
+                ...prev,
+                [selectedCategory.value]: [
+                  ...(prev[selectedCategory.value] || []),
+                  opt,
+                ],
+              }));
+              setSelectedSubCategory(opt);
+            }}
           />
+
+          {/* Main Location */}
           <CreatableSelect
-            placeholder='Main Location'
+            placeholder={t("mainLocationPlaceholder")}
             options={defaultLocationOptions}
             value={mainLocation}
-            onChange={(opt) => setMainLocation(opt)}
+            onChange={setMainLocation}
+            onCreateOption={(input) => {
+              const opt = { label: input, value: input };
+              setMainLocation(opt);
+            }}
           />
+
+          {/* Sizes */}
           <CreatableSelect
-            placeholder='Select Size(s)'
+            placeholder={t("sizePlaceholder")}
             isMulti
             options={defaultSizeOptions}
             value={sizes}
-            onChange={(opts) => setSizes(opts || [])}
+            onChange={setSizes}
+            onCreateOption={(input) => {
+              const opt = { label: input, value: input };
+              setSizes((prev) => [...prev, opt]);
+            }}
           />
+
+          {/* Colors */}
           <CreatableSelect
-            placeholder='Select Color(s)'
+            placeholder={t("colorPlaceholder")}
             isMulti
             options={defaultColorOptions}
             value={colors}
-            onChange={(opts) => setColors(opts || [])}
+            onChange={setColors}
+            onCreateOption={(input) => {
+              const opt = { label: input, value: input };
+              setColors((prev) => [...prev, opt]);
+            }}
           />
         </div>
       </div>
 
       {/* Images */}
       <div className='space-y-2'>
-        <h2 className='text-lg md:text-xl font-semibold'>Product Images</h2>
+        <h2 className='text-lg md:text-xl font-semibold'>
+          {t("productImages")}
+        </h2>
         <div className='flex flex-col gap-4 md:flex-row md:items-start'>
           {/* Main Image */}
           <div className='flex flex-col gap-1 w-full md:w-1/3'>
-            <Label className='text-sm'>Main Image</Label>
-
-            {/* Preview */}
+            <Label className='text-sm'>{t("mainImage")}</Label>
             {mainImageUrl && (
               <img
                 src={mainImageUrl}
@@ -360,7 +414,6 @@ export default function UploadProductForm() {
                 className='mb-2 w-32 h-32 object-cover rounded border'
               />
             )}
-
             <Input
               type='file'
               accept='image/*'
@@ -374,12 +427,9 @@ export default function UploadProductForm() {
               }}
             />
           </div>
-
           {/* Additional Images */}
           <div className='flex-1 flex flex-col gap-2'>
-            <Label className='text-sm'>Additional Images</Label>
-
-            {/* Existing previews */}
+            <Label className='text-sm'>{t("additionalImages")}</Label>
             {additionalImageUrls.map((url, idx) => (
               <div key={idx} className='flex items-center gap-2'>
                 <img
@@ -397,12 +447,10 @@ export default function UploadProductForm() {
                     )
                   }
                 >
-                  Remove
+                  {t("remove")}
                 </Button>
               </div>
             ))}
-
-            {/* New file input */}
             <div className='flex items-center gap-2'>
               <Input
                 type='file'
@@ -418,12 +466,11 @@ export default function UploadProductForm() {
                 }}
               />
             </div>
-
             <Button variant='link' size='sm'>
-              + Add Additional Images
+              + {t("addAdditionalImage")}
             </Button>
             <p className='text-xs text-muted-foreground'>
-              You can upload up to 3 additional images.
+              {t("additionalImagesHelp")}
             </p>
           </div>
         </div>
@@ -434,39 +481,37 @@ export default function UploadProductForm() {
         {priceTiers.map((tier) => (
           <div key={tier.id} className='space-y-4 border-b pb-4'>
             <div className='flex justify-between items-center'>
-              <h3 className='text-base font-medium'>Price Tier</h3>
+              <h3 className='text-base font-medium'>{t("priceTier")}</h3>
               <Button
                 variant='ghost'
                 className='text-red-600'
                 onClick={() => removeTier(tier.id)}
               >
-                Remove
+                {t("removeTier")}
               </Button>
             </div>
-
             <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
               <CreatableSelect
-                placeholder='Min Qty'
+                placeholder={t("minQty")}
                 options={defaultQuantityOptions}
                 value={tier.minQty}
                 onChange={(opt) => updateTier(tier.id, "minQty", opt)}
               />
               <CreatableSelect
-                placeholder='Max Qty'
+                placeholder={t("maxQty")}
                 options={defaultQuantityOptions}
                 value={tier.maxQty}
                 onChange={(opt) => updateTier(tier.id, "maxQty", opt)}
               />
               <CreatableSelect
-                placeholder='Price'
+                placeholder={t("price")}
                 options={defaultQuantityOptions}
                 value={tier.price}
                 onChange={(opt) => updateTier(tier.id, "price", opt)}
               />
             </div>
-
             <div>
-              <Label>Delivery Locations</Label>
+              <Label>{t("deliveryLocations")}</Label>
               {tier.deliveryLocations.map((loc) => (
                 <div
                   key={loc.id}
@@ -474,7 +519,7 @@ export default function UploadProductForm() {
                 >
                   <div className='w-full sm:w-1/2 md:w-1/3'>
                     <CreatableSelect
-                      placeholder='Location'
+                      placeholder={t("locationPlaceholder")}
                       options={defaultLocationOptions}
                       value={loc.location}
                       onChange={(opt) =>
@@ -484,7 +529,7 @@ export default function UploadProductForm() {
                   </div>
                   <div className='w-36'>
                     <CreatableSelect
-                      placeholder='Price'
+                      placeholder={t("price")}
                       options={defaultQuantityOptions}
                       value={loc.price}
                       onChange={(opt) =>
@@ -497,26 +542,25 @@ export default function UploadProductForm() {
                     className='text-red-600'
                     onClick={() => removeLocation(tier.id, loc.id)}
                   >
-                    Remove
+                    {t("removeLocation")}
                   </Button>
                 </div>
               ))}
               <Button variant='link' onClick={() => addLocation(tier.id)}>
-                + Add Location
+                + {t("addLocation")}
               </Button>
             </div>
           </div>
         ))}
-
         <Button variant='outline' onClick={addTier}>
-          + Add Price Tier
+          + {t("addTier")}
         </Button>
       </div>
 
       {/* Submit Button */}
       <div className='sticky bottom-0 bg-white py-4 px-4 md:px-0'>
-        <Button type='submit' disabled={saving} className='w-full …'>
-          {saving ? "Saving…" : "Save Changes"}
+        <Button type='submit' disabled={saving} className='w-full'>
+          {saving ? t("saving") : t("saveChanges")}
         </Button>
       </div>
     </form>

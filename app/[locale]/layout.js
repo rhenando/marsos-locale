@@ -2,15 +2,19 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
-import { Cairo, Montserrat } from "next/font/google";
+import localFont from "next/font/local";
+import { Montserrat } from "next/font/google";
 import RootProvider from "../RootProvider";
 
-const cairo = Cairo({
-  subsets: ["arabic"],
-  weight: ["400", "700"],
-  variable: "--font-cairo",
+const saudiWeb = localFont({
+  src: [
+    { path: "../fonts/SaudiWeb-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/SaudiWeb-Bold.woff2", weight: "700", style: "bold" },
+  ],
+  variable: "--font-saudiweb",
   display: "swap",
 });
+
 const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["400", "700"],
@@ -31,7 +35,7 @@ export default async function LocaleLayout({ children, params }) {
   const messages = (await import(`../../messages/${locale}.json`)).default;
 
   const dir = locale === "ar" ? "rtl" : "ltr";
-  const fontClass = `${montserrat.variable} ${cairo.variable} antialiased`;
+  const fontClass = `${montserrat.variable} ${saudiWeb.variable} antialiased`;
 
   return (
     <html lang={locale} dir={dir}>
@@ -40,7 +44,7 @@ export default async function LocaleLayout({ children, params }) {
         style={{
           fontFamily:
             locale === "ar"
-              ? "'Cairo', var(--font-cairo), sans-serif"
+              ? "'SaudiWeb', var(--font-saudiweb), sans-serif"
               : "'Montserrat', var(--font-montserrat), sans-serif",
         }}
       >

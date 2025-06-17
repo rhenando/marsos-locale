@@ -887,5 +887,32 @@
     "toast_error_delete": "Failed to delete category.",
     "toast_empty_update": "Cannot update with empty values.",
     "confirm_delete": "Are you sure you want to delete this category?"
+  },
+  "help-center": {
+    "title": "Help Center",
+    "subtitle": "Need help? Start with our frequently asked questions or reach out to our team.",
+    "searchPlaceholder": "Search FAQs...",
+    "noMatch": "No FAQs matched your search. Try a different keyword.",
+    "stillHaveQuestions": "Still have questions?",
+    "supportReady": "Our support team is ready to help you with anything you need.",
+    "contactUs": "Contact Us",
+    "faqs": [
+      {
+        "question": "How do I contact a supplier?",
+        "answer": "Once you find a product you like, click 'Contact Supplier' to start a conversation or request a quote."
+      },
+      {
+        "question": "Are the suppliers verified?",
+        "answer": "Yes, we verify all listed suppliers to ensure quality and trust in every transaction."
+      },
+      {
+        "question": "What payment methods are supported?",
+        "answer": "We support Visa, Mastercard, Mada, Apple Pay, Tabby, and Tamara for secure and flexible payments."
+      },
+      {
+        "question": "How do I submit a request for quotation (RFQ)?",
+        "answer": "Click on 'Request RFQ' on any product page or from your dashboard to describe what you need."
+      }
+    ]
   }
 }

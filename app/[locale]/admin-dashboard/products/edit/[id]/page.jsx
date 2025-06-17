@@ -17,7 +17,7 @@ import { db } from "@/firebase/config";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { CreatableSelect } from "@/components/ui/creatable-select";
+import CreatableSelect from "react-select/creatable";
 import {
   defaultLocationOptions,
   defaultSizeOptions,

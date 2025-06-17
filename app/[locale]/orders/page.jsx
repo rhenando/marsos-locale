@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-
 import { useSelector } from "react-redux";
 import BuyerProfile from "@/components/buyer/BuyerProfile";
 import Orders from "@/components/buyer/orders/Orders";
 import UserMessages from "@/components/supplier-buyer/UserMessages";
 
+// Lucide icons
 import {
   Home,
   User,
@@ -17,7 +17,7 @@ import {
   Mail,
   HelpCircle,
   Menu,
-} from "react-feather";
+} from "lucide-react";
 
 const Dashboard = () => {
   const { user: userData, loading } = useSelector((state) => state.auth);
